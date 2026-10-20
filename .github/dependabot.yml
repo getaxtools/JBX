@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule: { interval: weekly }
+    groups:
+      avalonia: { patterns: ['Avalonia*'] }
+      test-dependencies: { patterns: ['xunit*', 'Microsoft.NET.Test.Sdk', 'Microsoft.Extensions.*'] }
+    ignore:
+      # Avalonia.Headless.XUnit is built against xUnit v3 3.x; move with it, not ahead of it.
+      - dependency-name: xunit.v3
+        update-types: ['version-update:semver-major']
+      - dependency-name: xunit.runner.visualstudio
+        update-types: ['version-update:semver-major']
+    commit-message: { prefix: 'build(deps)' }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+    groups:
+      actions: { patterns: ['*'] }
+    commit-message: { prefix: 'ci(deps)' }

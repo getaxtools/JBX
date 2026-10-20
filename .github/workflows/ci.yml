@@ -1,0 +1,137 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  merge_group:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  AVALONIA_TELEMETRY_OPTOUT: '1'
+  TESTINGPLATFORM_TELEMETRY_OPTOUT: '1'
+
+jobs:
+  build-and-test:
+    name: Build, test and audit (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      - run: dotnet restore --locked-mode
+      - run: dotnet build --no-restore --configuration Release
+      - name: Test (every project listed, so a new one cannot be skipped silently)
+        run: |
+          $projects = @(
+            'tests/Jbx.Architecture.Tests',
+            'tests/Jbx.Core.Tests',
+            'tests/Jbx.Services.Tests',
+            'tests/Jbx.Platform.Windows.Tests',
+            'tests/Jbx.Desktop.Tests'
+          )
+          foreach ($project in $projects) {
+            dotnet test $project --no-build --configuration Release
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - run: dotnet format --verify-no-changes --no-restore
+      - run: pwsh scripts/Test-SourceHygiene.ps1
+      - run: pwsh scripts/Test-PackageLicences.ps1
+      - name: Vulnerable packages
+        run: |
+          $output = dotnet list package --vulnerable --include-transitive 2>&1 | Out-String
+          Write-Host $output
+          if ($output -match 'has the following vulnerable packages') {
+            Write-Host '::error::Vulnerable packages found.'
+            exit 1
+          }
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: trufflesecurity/trufflehog@e76dff8a7e57d6df0c60ad8cbf5d5cba505a8fc9 # v3.99.2
+        with:
+          extra_args: --results=verified,unknown
+
+  private-paths:
+    name: No private files
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Fail if personal assistant or planning files are tracked
+        run: |
+          tracked="$(git ls-files -- AGENTS.md CLAUDE.md .claude docs '*.plan.md' notepad++-plugin)"
+          if [ -n "$tracked" ]; then
+            echo "::error::These files must not be committed:"
+            echo "$tracked"
+            exit 1
+          fi
+
+  pull-request-title:
+    name: Conventional PR title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  developer-certificate-of-origin:
+    name: DCO sign-off
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check every human commit has a Signed-off-by line
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          missing=0
+          for commit in $(git rev-list --no-merges "$BASE_SHA..$HEAD_SHA"); do
+            if git show -s --format=%ae "$commit" | grep -qE '^[0-9]+\+[a-z0-9-]+\[bot\]@users\.noreply\.github\.com$'; then
+              continue
+            fi
+            if ! git show -s --format=%B "$commit" | grep -q '^Signed-off-by: '; then
+              echo "::error::Commit $commit has no Signed-off-by line. Use 'git commit -s'."
+              missing=1
+            fi
+          done
+          exit "$missing"

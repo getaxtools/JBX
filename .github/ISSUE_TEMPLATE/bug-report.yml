@@ -1,0 +1,40 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Please don't include real server names, share paths, user names or log contents; replace them with made-up ones such as `\\fs01.contoso.test\logs`.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a config with an environment whose share is offline
+        2. Open a tab for that environment
+        3. ...
+    validations: { required: true }
+  - type: input
+    id: jbx-version
+    attributes:
+      label: JBX version
+      description: Help > About JBX
+    validations: { required: true }
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version
+      placeholder: Windows Server 2022, x64 (over RDP)
+    validations: { required: true }
+  - type: textarea
+    id: config
+    attributes:
+      label: Config excerpt (optional)
+      description: The smallest made-up config that shows the problem.
+      render: yaml

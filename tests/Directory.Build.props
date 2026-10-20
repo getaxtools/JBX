@@ -3,6 +3,7 @@
 
   <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
     <OutputType>Exe</OutputType>
+    <RunSettingsFilePath>$(MSBuildThisFileDirectory)jbx.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">

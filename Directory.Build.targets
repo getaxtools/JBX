@@ -1,0 +1,4 @@
+<Project>
+  <!-- Replaces the build-time usage-statistics target that Avalonia.BuildServices adds, so no build of this repository reports anything. -->
+  <Target Name="AvaloniaStats" />
+</Project>
