@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Jbx.Core/Jbx.Core.csproj" />
+    <Project Path="src/Jbx.Platform/Jbx.Platform.csproj" />
+    <Project Path="src/Jbx.Platform.Windows/Jbx.Platform.Windows.csproj" />
+    <Project Path="src/Jbx.Services/Jbx.Services.csproj" />
+    <Project Path="src/Jbx.Desktop/Jbx.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Jbx.Testing/Jbx.Testing.csproj" />
+    <Project Path="tests/Jbx.Architecture.Tests/Jbx.Architecture.Tests.csproj" />
+    <Project Path="tests/Jbx.Core.Tests/Jbx.Core.Tests.csproj" />
+    <Project Path="tests/Jbx.Services.Tests/Jbx.Services.Tests.csproj" />
+    <Project Path="tests/Jbx.Platform.Windows.Tests/Jbx.Platform.Windows.Tests.csproj" />
+    <Project Path="tests/Jbx.Desktop.Tests/Jbx.Desktop.Tests.csproj" />
+  </Folder>
+</Solution>

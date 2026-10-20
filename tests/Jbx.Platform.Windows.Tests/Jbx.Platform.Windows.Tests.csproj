@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Jbx.Platform.Windows\Jbx.Platform.Windows.csproj" />
+    <ProjectReference Include="..\Jbx.Testing\Jbx.Testing.csproj" />
+  </ItemGroup>
+</Project>

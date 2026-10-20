@@ -1,0 +1,21 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <FontFamily x:Key="ContentControlThemeFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
+  <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
+
+  <x:Double x:Key="FontSizeCaption">12</x:Double>
+  <x:Double x:Key="FontSizeBody">14</x:Double>
+  <x:Double x:Key="FontSizeBodyLarge">18</x:Double>
+  <x:Double x:Key="FontSizeSubtitle">20</x:Double>
+
+  <x:Double x:Key="SpacingSmall">8</x:Double>
+  <x:Double x:Key="SpacingMedium">12</x:Double>
+  <x:Double x:Key="SpacingLarge">16</x:Double>
+  <Thickness x:Key="ContentEdgePadding">16</Thickness>
+
+  <x:Double x:Key="WindowDefaultWidth">1100</x:Double>
+  <x:Double x:Key="WindowDefaultHeight">700</x:Double>
+  <x:Double x:Key="WindowMinWidth">640</x:Double>
+  <x:Double x:Key="WindowMinHeight">400</x:Double>
+</ResourceDictionary>

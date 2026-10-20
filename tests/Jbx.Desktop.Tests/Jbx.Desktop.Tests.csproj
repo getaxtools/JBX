@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Headless.XUnit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Jbx.Desktop\Jbx.Desktop.csproj" />
+    <ProjectReference Include="..\Jbx.Testing\Jbx.Testing.csproj" />
+  </ItemGroup>
+</Project>

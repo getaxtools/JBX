@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Jbx.Core\Jbx.Core.csproj" />
+    <ProjectReference Include="..\..\src\Jbx.Platform\Jbx.Platform.csproj" />
+    <ProjectReference Include="..\..\src\Jbx.Platform.Windows\Jbx.Platform.Windows.csproj" />
+    <ProjectReference Include="..\..\src\Jbx.Services\Jbx.Services.csproj" />
+    <ProjectReference Include="..\..\src\Jbx.Desktop\Jbx.Desktop.csproj" />
+  </ItemGroup>
+</Project>

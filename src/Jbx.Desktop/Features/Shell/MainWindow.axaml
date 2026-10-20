@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="using:Jbx.Desktop.Features.Shell"
+        x:Class="Jbx.Desktop.Features.Shell.MainWindow"
+        x:DataType="shell:MainWindowViewModel"
+        Title="{Binding WindowTitle}"
+        Width="{StaticResource WindowDefaultWidth}"
+        Height="{StaticResource WindowDefaultHeight}"
+        MinWidth="{StaticResource WindowMinWidth}"
+        MinHeight="{StaticResource WindowMinHeight}"
+        WindowStartupLocation="CenterScreen">
+  <Grid Margin="{StaticResource ContentEdgePadding}">
+    <TextBlock Text="{Binding EmptyStateTitle}"
+               AutomationProperties.AutomationId="Shell.EmptyState.Title"
+               FontSize="{StaticResource FontSizeBodyLarge}"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               TextWrapping="Wrap" />
+  </Grid>
+</Window>
