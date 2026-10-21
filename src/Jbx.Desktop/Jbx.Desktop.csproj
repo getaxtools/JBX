@@ -5,6 +5,9 @@
     <RootNamespace>Jbx.Desktop</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <!-- Both put the release graph in the lock file, so a locked restore can publish: the win-x64 assets and the trimmer package. -->
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
   </PropertyGroup>
 
   <ItemGroup>

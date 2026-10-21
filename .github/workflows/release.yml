@@ -1,0 +1,157 @@
+name: Release
+
+# Builds a tagged version into a draft GitHub release: JBX.exe, SBOM, notices, checksums and build provenance.
+# The owner publishes the draft after the smoke checklist in CONTRIBUTING.md.
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to build, for example v0.1.0
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  AVALONIA_TELEMETRY_OPTOUT: '1'
+  TESTINGPLATFORM_TELEMETRY_OPTOUT: '1'
+  TAG: ${{ inputs.tag }}
+
+jobs:
+  build:
+    name: Build JBX.exe
+    if: github.repository_owner == 'getaxtools'
+    runs-on: windows-latest
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Check the tag matches the version in Directory.Build.props
+        run: |
+          [xml] $props = Get-Content Directory.Build.props
+          $version = ($props.Project.PropertyGroup | Where-Object { $_.VersionPrefix }).VersionPrefix
+          if ("v$version" -ne $env:TAG) {
+            Write-Host "::error::Tag $env:TAG does not match version $version."
+            exit 1
+          }
+          "VERSION=$version" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+      - run: dotnet restore --locked-mode
+      - run: dotnet build --no-restore --configuration Release -p:VersionSuffix=
+      - name: Test
+        run: |
+          foreach ($project in Get-ChildItem tests -Filter *.Tests.csproj -Recurse) {
+            dotnet test $project.FullName --no-build --configuration Release
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - run: pwsh scripts/Test-PackageLicences.ps1
+      - run: pwsh scripts/New-ThirdPartyNotices.ps1 -Check
+      - name: Publish
+        run: dotnet publish src/Jbx.Desktop -p:PublishProfile=win-x64 -p:VersionSuffix= -o artifacts/publish
+      - name: Check the published file
+        run: |
+          $exe = Get-Item artifacts/publish/JBX.exe
+          $published = @(Get-ChildItem artifacts/publish -File)
+          if ($published.Count -ne 1) {
+            Write-Host "::error::Expected only JBX.exe, found: $($published.Name -join ', ')"
+            exit 1
+          }
+          if (-not $exe.VersionInfo.ProductVersion.StartsWith($env:VERSION)) {
+            Write-Host "::error::JBX.exe reports $($exe.VersionInfo.ProductVersion), expected $env:VERSION."
+            exit 1
+          }
+          Write-Host "JBX.exe $($exe.VersionInfo.ProductVersion), $([math]::Round($exe.Length / 1MB, 1)) MB"
+      - name: Software bill of materials
+        run: |
+          dotnet tool restore
+          dotnet CycloneDX src/Jbx.Desktop/Jbx.Desktop.csproj --recursive --runtime win-x64 --framework net10.0 `
+            --output-format Json --output artifacts/publish --filename JBX-$env:VERSION.cdx.json `
+            --set-name JBX --set-version $env:VERSION --disable-package-restore
+      - run: Copy-Item THIRD-PARTY-NOTICES.txt, LICENSE-MIT, LICENSE-APACHE, NOTICE artifacts/publish
+      - id: upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: jbx-unsigned
+          path: artifacts/publish
+          if-no-files-found: error
+
+  sign:
+    name: Sign JBX.exe
+    needs: build
+    if: vars.SIGNPATH_ORGANIZATION_ID != ''
+    runs-on: windows-latest
+    environment: release
+    steps:
+      - uses: signpath/github-action-submit-signing-request@c92b958760219087e01f8d67a1669ed57afe2627 # v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: jbx
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: jbx-exe
+          github-artifact-id: ${{ needs.build.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: artifacts/signed
+      - name: Verify the signature
+        run: |
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Recurse -Filter signtool.exe |
+            Where-Object { $_.FullName -match '\\x64\\' } | Sort-Object FullName -Descending | Select-Object -First 1
+          & $signtool.FullName verify /pa /v artifacts/signed/JBX.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: jbx-signed
+          path: artifacts/signed
+          if-no-files-found: error
+
+  draft-release:
+    name: Draft GitHub release
+    needs: [build, sign]
+    if: ${{ !cancelled() && needs.build.result == 'success' && needs.sign.result != 'failure' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ needs.sign.result == 'success' && 'jbx-signed' || 'jbx-unsigned' }}
+          path: release
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: release/JBX.exe
+      - name: Checksums
+        working-directory: release
+        run: sha256sum -- * > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - name: Upload to the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SIGNED: ${{ needs.sign.result == 'success' }}
+        run: |
+          if ! gh release view "$TAG" > /dev/null 2>&1; then
+            gh release create "$TAG" --draft --verify-tag --title "JBX $TAG" --generate-notes
+          fi
+          if [ "$SIGNED" != "true" ]; then
+            echo "::warning::JBX.exe is not signed. Do not publish this draft until it is."
+          fi
+          gh release upload "$TAG" release/* --clobber

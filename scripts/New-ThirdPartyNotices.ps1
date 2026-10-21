@@ -25,7 +25,7 @@ if (-not $RepositoryRoot) {
 }
 
 # Used while building only; nothing from them is in the shipped app.
-$buildOnlyPackages = @('Avalonia.BuildServices', 'Microsoft.CodeAnalysis.ResxSourceGenerator')
+$buildOnlyPackages = @('Avalonia.BuildServices', 'Microsoft.CodeAnalysis.ResxSourceGenerator', 'Microsoft.NET.ILLink.Tasks')
 
 $noticesPath = Join-Path $RepositoryRoot 'THIRD-PARTY-NOTICES.txt'
 $lockPath = Join-Path $RepositoryRoot 'src/Jbx.Desktop/packages.lock.json'

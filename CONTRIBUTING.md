@@ -33,6 +33,7 @@ Thanks for helping. This guide covers setup, workflow, the Definition of Done an
 | Format check / fix | `dotnet format --verify-no-changes` / `dotnet format` |
 | Source hygiene | `pwsh scripts/Test-SourceHygiene.ps1` |
 | License check | `pwsh scripts/Test-PackageLicences.ps1` |
+| Release build (single JBX.exe) | `dotnet publish src/Jbx.Desktop -p:PublishProfile=win-x64 -o artifacts/publish` |
 | Vulnerable packages | `dotnet list package --vulnerable --include-transitive` |
 
 `pwsh` is PowerShell 7; both scripts also run in Windows PowerShell 5.1 (`powershell -File scripts\Test-SourceHygiene.ps1`).
@@ -112,6 +113,28 @@ AI coding tools are welcome, with these rules:
 1. Add an entry to `src/Jbx.Desktop/Resources/Strings.resx`, named `Feature_Area_Purpose` (for example `Favourites_Pane_EmptyState`).
 2. Use it through the generated `Strings` class in C#, or `{x:Static res:Strings.Favourites_Pane_EmptyState}` in XAML.
 3. For values in a sentence, put placeholders in the resource (`"{0} files"`) and use the generated `Format...` method. Never build sentences by joining strings.
+
+## README screenshots
+
+`pwsh scripts/New-ReadmeMedia.ps1` creates the demo folders, drives JBX through a short tour with UI Automation and writes the screenshots and `tour.gif` to `.github/media`. Close JBX first: the script swaps in a temporary settings file and puts yours back afterwards. It needs Python 3 with Pillow (`python -m pip install pillow`). Regenerate the media when a change alters what the tour shows.
+
+## Releasing (maintainers)
+
+1. Merging to `main` keeps a release pull request open, with the next version and changelog worked out from the Conventional Commit titles.
+2. Merging that pull request tags the version and runs the release workflow: build and test, publish `JBX.exe`, the software bill of materials, signing (once the signing service is set up, with owner approval in the `release` environment), build provenance and checksums. The result is a **draft** release.
+3. Run the smoke checklist on the draft's `JBX.exe`, then publish the draft. Never publish an unsigned build.
+
+Smoke checklist:
+
+- [ ] On a clean Windows VM with no .NET installed, a double-click starts JBX with no prompt and no elevation.
+- [ ] It runs from a read-only folder and from a network share.
+- [ ] Nothing is written next to the exe or to the registry; settings are under `%LOCALAPPDATA%\getaxtools\JBX\`.
+- [ ] A config with an unreachable share keeps the window responsive, and the row shows *Timed out*.
+- [ ] Two instances run side by side against different configs.
+- [ ] No network connection is made during a full manual run.
+- [ ] About shows the version and the third-party licences; the signature verifies and Windows shows the publisher.
+
+To rebuild an existing tag, run the **Release** workflow by hand with the tag name.
 
 ## Reporting bugs and asking for features
 

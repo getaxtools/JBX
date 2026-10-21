@@ -6,3 +6,5 @@
 *.png binary
 *.ico binary
 *.ttf binary
+*.py text eol=lf
+*.gif binary
