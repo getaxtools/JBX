@@ -1,0 +1,46 @@
+version: 1
+
+globals:
+  logRoot: "D:\\Logs"
+  shareRoot: "\\\\fs01.contoso.test\\AppLogs"
+
+environments:
+  - id: dev
+    displayName: Development
+  - id: uat
+    displayName: UAT
+  - id: prod
+    displayName: Production
+    serverHost: prod-cluster-01.contoso.test
+
+applications:
+  - id: billing-portal
+    displayName: Billing Portal
+    description: Invoices and statements
+    owner: Finance Platform Team
+    tags: [finance, tier1]
+    classification: sox
+    folders:
+      - type: api
+        label: Billing API
+        pathTemplate: "{{shareRoot}}\\{{env}}\\BillingPortal\\Api\\logs"
+        logFilePattern: "api-*.log"
+        retentionDays: 30
+        notes: rotates daily
+      - type: web
+        label: IIS Site Logs
+        pathTemplate: "{{logRoot}}\\{{env}}\\BillingPortal-Web\\W3SVC1"
+        externalLogUrl: "https://logs.contoso.test/billing"
+      - type: "custom:etl"
+        label: Nightly ETL
+        pathTemplate: "{{shareRoot}}\\{{env}}\\{{app}}\\etl\\{{date:yyyy-MM-dd}}"
+        enabled: false
+
+  - id: orders-service
+    displayName: Orders Service
+    owner: Commerce Team
+    tags: [commerce]
+    folders:
+      - type: backgroundservice
+        label: Order Scheduler
+        pathTemplate: "{{logRoot}}\\{{env}}\\Orders\\Scheduler\\logs"

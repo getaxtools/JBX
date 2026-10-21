@@ -1,0 +1,23 @@
+version: 1
+
+environments:
+  - id: dev
+    displayName: Development
+  - id: dev
+    displayName: Development again
+
+applications:
+  - id: billing-portal
+    displayName: Billing Portal
+    folders:
+      - type: api
+        label: Billing API
+        pathTemplate: "\\\\fs01.contoso.test\\{{missingRoot}}\\{{env}}"
+        retentionDays: -5
+      - type: mainframe
+        label: Bridge
+        pathTemplate: "D:\\Logs\\{{env}}\\Bridge"
+
+  - id: billing-portal
+    displayName: Billing Portal copy
+    folders: []

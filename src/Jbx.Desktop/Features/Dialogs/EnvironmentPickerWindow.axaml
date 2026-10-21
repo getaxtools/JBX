@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dialogs="using:Jbx.Desktop.Features.Dialogs"
+        xmlns:infra="using:Jbx.Desktop.Infrastructure"
+        xmlns:res="using:Jbx.Desktop.Resources"
+        x:Class="Jbx.Desktop.Features.Dialogs.EnvironmentPickerWindow"
+        x:DataType="dialogs:EnvironmentPickerViewModel"
+        Title="{x:Static res:Strings.Picker_Title}"
+        Width="420" SizeToContent="Height" MinHeight="240"
+        CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource SurfaceCardBrush}">
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}" />
+  </Window.KeyBindings>
+  <StackPanel Margin="20" Spacing="12">
+    <TextBlock Text="{x:Static res:Strings.Picker_Title}" Classes="subtitle" />
+    <TextBlock Text="{x:Static res:Strings.Picker_Prompt}" Classes="secondary" TextWrapping="Wrap" />
+    <ListBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Selected}" MaxHeight="320"
+             IsTextSearchEnabled="True"
+             AutomationProperties.Name="{x:Static res:Strings.Picker_Prompt}"
+             AutomationProperties.AutomationId="Picker.Environments"
+             infra:FocusRequest.Token="{Binding FocusToken}">
+      <ListBox.KeyBindings>
+        <KeyBinding Gesture="Enter" Command="{Binding AcceptCommand}" />
+      </ListBox.KeyBindings>
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem" x:DataType="dialogs:EnvironmentChoice">
+          <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleName}" />
+        </Style>
+      </ListBox.Styles>
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="dialogs:EnvironmentChoice">
+          <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" Background="Transparent"
+                infra:PointerCommands.DoubleTapCommand="{Binding $parent[Window].((dialogs:EnvironmentPickerViewModel)DataContext).AcceptCommand}">
+            <Path Grid.RowSpan="2" Classes="icon production" Data="{StaticResource IconProduction}" IsVisible="{Binding IsProduction}" Margin="0,2,8,0" VerticalAlignment="Top" />
+            <TextBlock Grid.Column="1" Text="{Binding Name}" Classes="bodyStrong" />
+            <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Detail}" Classes="caption secondary" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button Content="{x:Static res:Strings.Picker_Accept}" Command="{Binding AcceptCommand}" Classes="accent" IsDefault="True" />
+      <Button Content="{x:Static res:Strings.Dialog_Cancel}" Command="{Binding CancelCommand}" IsCancel="True" />
+    </StackPanel>
+  </StackPanel>
+</Window>

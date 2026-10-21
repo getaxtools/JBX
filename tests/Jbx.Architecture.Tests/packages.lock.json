@@ -8,6 +8,12 @@
         "resolved": "10.0.13",
         "contentHash": "6TyllZsToy3S/Ziu67GddljRTttuVJ8bbrbVUrsdHqH5678Oax5MpaEubxLoPoWLvgUBYo4KfcAig0mkBtktXQ=="
       },
+      "Microsoft.Extensions.TimeProvider.Testing": {
+        "type": "Direct",
+        "requested": "[10.11.0, )",
+        "resolved": "10.11.0",
+        "contentHash": "DTivKZ2Du0dJideTTa6vPj/eXKNRu+RxtjBX7NOOUXHBtHx1ehbE+lM+j3/5M3wU6BqzcZqEEyR4+FnPKs2rTA=="
+      },
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[18.11.0, )",
@@ -322,6 +328,7 @@
           "Avalonia": "[12.1.4, )",
           "Avalonia.Desktop": "[12.1.4, )",
           "Avalonia.Themes.Fluent": "[12.1.4, )",
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
           "Jbx.Platform.Windows": "[0.1.0-dev, )",
           "Jbx.Services": "[0.1.0-dev, )"
         }
@@ -329,7 +336,7 @@
       "jbx.core": {
         "type": "Project",
         "dependencies": {
-          "Avalonia": "[12.1.4, )"
+          "YamlDotNet": "[18.1.0, )"
         }
       },
       "jbx.platform": {
@@ -346,8 +353,7 @@
         "type": "Project",
         "dependencies": {
           "Jbx.Core": "[0.1.0-dev, )",
-          "Jbx.Platform": "[0.1.0-dev, )",
-          "Jbx.Platform.Windows": "[0.1.0-dev, )"
+          "Jbx.Platform": "[0.1.0-dev, )"
         }
       },
       "Avalonia": {
@@ -383,6 +389,18 @@
         "dependencies": {
           "Avalonia": "12.1.4"
         }
+      },
+      "CommunityToolkit.Mvvm": {
+        "type": "CentralTransitive",
+        "requested": "[8.4.2, )",
+        "resolved": "8.4.2",
+        "contentHash": "WadCzGEc2U+3e20avRLng4qNtt4zoOGWrdUISqJWrHe3/FSnrYjuM5Sb4yQb09LhkBXrrI4Zt3dLKgRMbItsrg=="
+      },
+      "YamlDotNet": {
+        "type": "CentralTransitive",
+        "requested": "[18.1.0, )",
+        "resolved": "18.1.0",
+        "contentHash": "5K+9KFg2TdTl7VXv88Qzi/0lqK6JFoNP3lRuImPYGRV7K/QYklDyTrj4+A+KAki1JsQi6qKY+hDyY7d6WRqjrw=="
       }
     }
   }

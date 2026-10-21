@@ -1,0 +1,204 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:details="using:Jbx.Desktop.Features.Details"
+             xmlns:controls="using:Jbx.Desktop.Controls"
+             xmlns:infra="using:Jbx.Desktop.Infrastructure"
+             xmlns:res="using:Jbx.Desktop.Resources"
+             x:Class="Jbx.Desktop.Features.Details.DetailsView"
+             x:DataType="details:FolderDetailsViewModel"
+             AutomationProperties.Name="{x:Static res:Strings.Tab_Details}">
+  <Panel>
+    <TextBlock Text="{x:Static res:Strings.Details_Nothing}" IsVisible="{Binding IsNothing}"
+               Classes="secondary" TextWrapping="Wrap" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+    <ScrollViewer IsVisible="{Binding IsApplication}">
+      <StackPanel Margin="{StaticResource ContentEdgePadding}" Spacing="12">
+        <TextBlock Text="{Binding Title}" Classes="subtitle" TextWrapping="Wrap" />
+        <TextBlock Text="{x:Static res:Strings.Details_ApplicationHint}" Classes="secondary" TextWrapping="Wrap" />
+        <ItemsControl ItemsSource="{Binding Facts}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="details:DetailsFact">
+              <Grid ColumnDefinitions="110,*" Margin="0,2">
+                <TextBlock Text="{Binding Label}" Classes="secondary" />
+                <SelectableTextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+
+    <ScrollViewer IsVisible="{Binding IsFile}">
+      <StackPanel Margin="{StaticResource ContentEdgePadding}" Spacing="10">
+        <TextBlock Text="{Binding Title}" Classes="subtitle" TextWrapping="Wrap"
+                   AutomationProperties.HeadingLevel="2" AutomationProperties.AutomationId="Details.FileTitle" />
+        <TextBlock Text="{Binding Subtitle}" Classes="secondary" TextWrapping="Wrap" />
+        <StackPanel Spacing="2">
+          <TextBlock Text="{x:Static res:Strings.Details_Path}" Classes="caption secondary" />
+          <SelectableTextBlock Text="{Binding PathText}" TextWrapping="Wrap" FontFamily="Cascadia Mono, Consolas"
+                               AutomationProperties.Name="{x:Static res:Strings.Details_Path}"
+                               AutomationProperties.AutomationId="Details.FilePath" />
+        </StackPanel>
+        <ItemsControl ItemsSource="{Binding Facts}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="details:DetailsFact">
+              <Grid ColumnDefinitions="110,*" Margin="0,2">
+                <TextBlock Text="{Binding Label}" Classes="caption secondary" />
+                <SelectableTextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <WrapPanel ItemSpacing="8" LineSpacing="6">
+          <Button Command="{Binding OpenTargetFileCommand}" Classes="accent"
+                  infra:FocusRequest.Token="{Binding FocusToken}"
+                  AutomationProperties.AutomationId="Details.OpenFile">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon" Data="{StaticResource IconFile}" Stroke="{Binding $parent[Button].Foreground}" />
+              <TextBlock Text="{x:Static res:Strings.Details_OpenFile}" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding OpenTargetWithDefaultAppCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon" Data="{StaticResource IconOpenExternal}" />
+              <TextBlock Text="{x:Static res:Strings.Viewer_OpenWithDefaultApp}" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding OpenInExplorerCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon" Data="{StaticResource IconFolder}" />
+              <TextBlock Text="{x:Static res:Strings.Details_ShowInFolder}" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding CopyPathCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon" Data="{StaticResource IconCopy}" />
+              <TextBlock Text="{x:Static res:Strings.Details_CopyPath}" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding ToggleFavouriteCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon favourite" Data="{StaticResource IconStar}" IsVisible="{Binding IsFavourite}" />
+              <Path Classes="icon" Data="{StaticResource IconStar}" IsVisible="{Binding !IsFavourite}" />
+              <TextBlock Text="{x:Static res:Strings.Details_AddFavourite}" IsVisible="{Binding !IsFavourite}" />
+              <TextBlock Text="{x:Static res:Strings.Details_RemoveFavourite}" IsVisible="{Binding IsFavourite}" />
+            </StackPanel>
+          </Button>
+        </WrapPanel>
+        <TextBlock Text="{Binding ActionMessage}" Classes="caption secondary" TextWrapping="Wrap"
+                   AutomationProperties.Name="{Binding ActionMessage}" AutomationProperties.LiveSetting="Polite"
+                   AutomationProperties.AutomationId="Details.FileMessage" />
+      </StackPanel>
+    </ScrollViewer>
+
+    <Grid IsVisible="{Binding IsFolder}" RowDefinitions="Auto,*">
+      <StackPanel Grid.Row="0" Margin="16,16,16,8" Spacing="10">
+        <TextBlock Text="{Binding Title}" Classes="subtitle" TextWrapping="Wrap"
+                   AutomationProperties.HeadingLevel="2" AutomationProperties.AutomationId="Details.Title" />
+        <TextBlock Text="{Binding Subtitle}" Classes="secondary" TextWrapping="Wrap" />
+        <Border Classes="card">
+          <StackPanel Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <controls:StatusBadge Reachability="{Binding Status}" />
+              <TextBlock Text="{Binding CheckedText}" Classes="caption secondary" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Text="{Binding RemedyText}" TextWrapping="Wrap"
+                       AutomationProperties.Name="{Binding RemedyText}" AutomationProperties.LiveSetting="Polite"
+                       AutomationProperties.AutomationId="Details.Remedy" />
+          </StackPanel>
+        </Border>
+        <StackPanel Spacing="2">
+          <TextBlock Text="{x:Static res:Strings.Details_Path}" Classes="caption secondary" />
+          <SelectableTextBlock Text="{Binding PathText}" TextWrapping="Wrap" FontFamily="Cascadia Mono, Consolas"
+                               AutomationProperties.Name="{x:Static res:Strings.Details_Path}"
+                               AutomationProperties.AutomationId="Details.Path" />
+        </StackPanel>
+        <ItemsControl ItemsSource="{Binding Facts}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="details:DetailsFact">
+              <Grid ColumnDefinitions="110,*" Margin="0,2">
+                <TextBlock Text="{Binding Label}" Classes="caption secondary" />
+                <SelectableTextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <WrapPanel ItemSpacing="8" LineSpacing="6">
+          <Button Command="{Binding OpenInExplorerCommand}" Classes="accent"
+                  infra:FocusRequest.Token="{Binding FocusToken}"
+                  ToolTip.Tip="{x:Static infra:CommandCatalog.OpenInExplorer}"
+                  AutomationProperties.AutomationId="Details.OpenInExplorer">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon" Data="{StaticResource IconOpenExternal}" Stroke="{Binding $parent[Button].Foreground}" />
+              <TextBlock Text="{x:Static res:Strings.Details_OpenInExplorer}" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding CopyPathCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon" Data="{StaticResource IconCopy}" />
+              <TextBlock Text="{x:Static res:Strings.Details_CopyPath}" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding ToggleFavouriteCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon favourite" Data="{StaticResource IconStar}" IsVisible="{Binding IsFavourite}" />
+              <Path Classes="icon" Data="{StaticResource IconStar}" IsVisible="{Binding !IsFavourite}" />
+              <TextBlock Text="{x:Static res:Strings.Details_AddFavourite}" IsVisible="{Binding !IsFavourite}" />
+              <TextBlock Text="{x:Static res:Strings.Details_RemoveFavourite}" IsVisible="{Binding IsFavourite}" />
+            </StackPanel>
+          </Button>
+        </WrapPanel>
+        <TextBlock Text="{Binding ActionMessage}" Classes="caption secondary" TextWrapping="Wrap"
+                   AutomationProperties.Name="{Binding ActionMessage}" AutomationProperties.LiveSetting="Polite" />
+        <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+          <TextBlock Text="{x:Static res:Strings.Details_Files}" Classes="bodyStrong" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Classes="subtle" Command="{Binding ViewFilesCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon" Data="{StaticResource IconRefresh}" />
+              <TextBlock Text="{x:Static res:Strings.Details_ViewFiles}" />
+            </StackPanel>
+          </Button>
+        </Grid>
+        <TextBlock Text="{x:Static res:Strings.Details_LoadingFiles}" IsVisible="{Binding IsLoadingFiles}" Classes="caption secondary" />
+        <TextBlock Text="{Binding FilesMessage}" IsVisible="{Binding HasFilesMessage}" Classes="caption secondary" TextWrapping="Wrap"
+                   AutomationProperties.AutomationId="Details.FilesMessage" />
+      </StackPanel>
+      <ListBox Grid.Row="1" Classes="rows" Margin="8,0,8,8"
+               ItemsSource="{Binding Files}" SelectedItem="{Binding SelectedFile}" IsVisible="{Binding HasFiles}"
+               IsTextSearchEnabled="True"
+               AutomationProperties.Name="{x:Static res:Strings.Details_Files}">
+        <ListBox.KeyBindings>
+          <KeyBinding Gesture="Enter" Command="{Binding OpenFileCommand}" />
+          <KeyBinding Gesture="{x:Static infra:CommandCatalog.OpenInExplorer}" Command="{Binding RevealFileCommand}" />
+          <KeyBinding Gesture="{x:Static infra:CommandCatalog.CopyPath}" Command="{Binding CopyFilePathCommand}" />
+        </ListBox.KeyBindings>
+        <ListBox.Styles>
+          <Style Selector="ListBoxItem" x:DataType="details:FileRowViewModel">
+            <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
+            <Setter Property="AutomationProperties.HelpText" Value="{Binding LastWriteExact}" />
+          </Style>
+        </ListBox.Styles>
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="details:FileRowViewModel">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" Background="Transparent"
+                  infra:PointerCommands.DoubleTapCommand="{Binding $parent[ListBox].((details:FolderDetailsViewModel)DataContext).OpenFileCommand}"
+                  infra:PointerCommands.CommandParameter="{Binding}">
+              <Grid.ContextMenu>
+                <ContextMenu>
+                  <MenuItem Header="{x:Static res:Strings.Details_OpenFile}" Command="{Binding $parent[ListBox].((details:FolderDetailsViewModel)DataContext).OpenFileCommand}" CommandParameter="{Binding}" />
+                  <MenuItem Header="{x:Static res:Strings.Viewer_OpenWithDefaultApp}" Command="{Binding $parent[ListBox].((details:FolderDetailsViewModel)DataContext).OpenFileWithDefaultAppCommand}" CommandParameter="{Binding}" />
+                  <MenuItem Header="{x:Static res:Strings.Details_ShowInFolder}" Command="{Binding $parent[ListBox].((details:FolderDetailsViewModel)DataContext).RevealFileCommand}" CommandParameter="{Binding}" />
+                  <MenuItem Header="{x:Static res:Strings.Details_CopyFilePath}" Command="{Binding $parent[ListBox].((details:FolderDetailsViewModel)DataContext).CopyFilePathCommand}" CommandParameter="{Binding}" />
+                </ContextMenu>
+              </Grid.ContextMenu>
+              <Path Classes="icon" Data="{StaticResource IconFile}" Margin="0,0,8,0" />
+              <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Text="{Binding LastWriteText}" Classes="caption secondary" Margin="8,0" VerticalAlignment="Center" ToolTip.Tip="{Binding LastWriteExact}" />
+              <TextBlock Grid.Column="3" Text="{Binding SizeText}" Classes="caption secondary" MinWidth="56" TextAlignment="Right" VerticalAlignment="Center" />
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Grid>
+  </Panel>
+</UserControl>

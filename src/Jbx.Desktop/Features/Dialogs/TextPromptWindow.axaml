@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dialogs="using:Jbx.Desktop.Features.Dialogs"
+        xmlns:infra="using:Jbx.Desktop.Infrastructure"
+        xmlns:res="using:Jbx.Desktop.Resources"
+        x:Class="Jbx.Desktop.Features.Dialogs.TextPromptWindow"
+        x:DataType="dialogs:TextPromptViewModel"
+        Title="{Binding Title}"
+        Width="480" SizeToContent="Height"
+        CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource SurfaceCardBrush}">
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}" />
+  </Window.KeyBindings>
+  <StackPanel Margin="20" Spacing="12">
+    <TextBlock Text="{Binding Title}" Classes="subtitle" />
+    <TextBlock Text="{Binding Prompt}" Classes="secondary" TextWrapping="Wrap" />
+    <TextBox Text="{Binding Text}" AutomationProperties.Name="{Binding Prompt}" infra:FocusRequest.Token="1">
+      <TextBox.KeyBindings>
+        <KeyBinding Gesture="Enter" Command="{Binding AcceptCommand}" />
+      </TextBox.KeyBindings>
+    </TextBox>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button Content="{Binding AcceptLabel}" Command="{Binding AcceptCommand}" Classes="accent" IsDefault="True" />
+      <Button Content="{x:Static res:Strings.Dialog_Cancel}" Command="{Binding CancelCommand}" IsCancel="True" />
+    </StackPanel>
+  </StackPanel>
+</Window>

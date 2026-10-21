@@ -1,6 +1,12 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:chrome="using:Avalonia.Controls.Chrome"
         xmlns:shell="using:Jbx.Desktop.Features.Shell"
+        xmlns:tabs="using:Jbx.Desktop.Features.Tabs"
+        xmlns:favourites="using:Jbx.Desktop.Features.Favourites"
+        xmlns:palette="using:Jbx.Desktop.Features.Palette"
+        xmlns:infra="using:Jbx.Desktop.Infrastructure"
+        xmlns:res="using:Jbx.Desktop.Resources"
         x:Class="Jbx.Desktop.Features.Shell.MainWindow"
         x:DataType="shell:MainWindowViewModel"
         Title="{Binding WindowTitle}"
@@ -8,13 +14,250 @@
         Height="{StaticResource WindowDefaultHeight}"
         MinWidth="{StaticResource WindowMinWidth}"
         MinHeight="{StaticResource WindowMinHeight}"
-        WindowStartupLocation="CenterScreen">
-  <Grid Margin="{StaticResource ContentEdgePadding}">
-    <TextBlock Text="{Binding EmptyStateTitle}"
-               AutomationProperties.AutomationId="Shell.EmptyState.Title"
-               FontSize="{StaticResource FontSizeBodyLarge}"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center"
-               TextWrapping="Wrap" />
+        WindowStartupLocation="CenterScreen"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="{StaticResource TitleBarHeight}"
+        Background="{DynamicResource SurfaceBaseBrush}">
+  <Window.KeyBindings>
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.NewTab}" Command="{Binding NewTabCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.CloseTab}" Command="{Binding CloseTabCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.CloseTabAlternative}" Command="{Binding CloseTabCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.NextTab}" Command="{Binding NextTabCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.NextTabAlternative}" Command="{Binding NextTabCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.PreviousTab}" Command="{Binding PreviousTabCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.PreviousTabAlternative}" Command="{Binding PreviousTabCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.FocusSearch}" Command="{Binding FocusSearchCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.FocusSearchAlternative}" Command="{Binding FocusSearchCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.Refresh}" Command="{Binding RefreshCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.OpenConfig}" Command="{Binding OpenConfigCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.ReloadConfig}" Command="{Binding ReloadConfigCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.ToggleFavouritesPane}" Command="{Binding ToggleFavouritesPaneCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.AddFavouritePath}" Command="{Binding Favourites.AddPathCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.UndoFavourite}" Command="{Binding Favourites.UndoCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.NextPane}" Command="{Binding NextPaneCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.About}" Command="{Binding ShowAboutCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.CommandPalette}" Command="{Binding OpenPaletteCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.EditConfig}" Command="{Binding EditConfigCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.MoveTabLeft}" Command="{Binding MoveTabLeftCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.MoveTabRight}" Command="{Binding MoveTabRightCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.PreviousPane}" Command="{Binding PreviousPaneCommand}" />
+    <KeyBinding Gesture="Ctrl+D1" Command="{Binding SelectTabAtCommand}" CommandParameter="1" />
+    <KeyBinding Gesture="Ctrl+D2" Command="{Binding SelectTabAtCommand}" CommandParameter="2" />
+    <KeyBinding Gesture="Ctrl+D3" Command="{Binding SelectTabAtCommand}" CommandParameter="3" />
+    <KeyBinding Gesture="Ctrl+D4" Command="{Binding SelectTabAtCommand}" CommandParameter="4" />
+    <KeyBinding Gesture="Ctrl+D5" Command="{Binding SelectTabAtCommand}" CommandParameter="5" />
+    <KeyBinding Gesture="Ctrl+D6" Command="{Binding SelectTabAtCommand}" CommandParameter="6" />
+    <KeyBinding Gesture="Ctrl+D7" Command="{Binding SelectTabAtCommand}" CommandParameter="7" />
+    <KeyBinding Gesture="Ctrl+D8" Command="{Binding SelectTabAtCommand}" CommandParameter="8" />
+    <KeyBinding Gesture="Ctrl+D9" Command="{Binding SelectTabAtCommand}" CommandParameter="9" />
+  </Window.KeyBindings>
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Grid Grid.Row="0" Height="{StaticResource TitleBarHeight}" ColumnDefinitions="Auto,Auto,*,Auto">
+      <Border Grid.Column="0" Padding="14,0,10,0" chrome:WindowDecorationProperties.ElementRole="TitleBar" Background="Transparent">
+        <TextBlock Text="JBX" Classes="bodyStrong caption" VerticalAlignment="Center" />
+      </Border>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+        <ListBox x:Name="TabStrip"
+                 Classes="tabs"
+                 ItemsSource="{Binding Tabs}"
+                 SelectedItem="{Binding SelectedTab}"
+                 infra:DragReorder.Command="{Binding MoveTabCommand}"
+                 AutomationProperties.Name="{x:Static res:Strings.Shell_TabStrip}"
+                 AutomationProperties.AutomationId="Shell.TabStrip">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="tabs:TabViewModel">
+              <Grid ColumnDefinitions="Auto,*,Auto"
+                    Background="Transparent"
+                    infra:PointerCommands.MiddleClickCommand="{Binding CloseCommand}"
+                    AutomationProperties.Name="{Binding AccessibleHeader}">
+                <Grid.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Header="{x:Static res:Strings.Shell_CloseTab}" Command="{Binding CloseCommand}" InputGesture="{x:Static infra:CommandCatalog.CloseTab}" />
+                  </ContextMenu>
+                </Grid.ContextMenu>
+                <Path Grid.Column="0" Classes="icon production" Data="{StaticResource IconProduction}" IsVisible="{Binding IsProduction}" Margin="0,0,6,0" />
+                <TextBlock Grid.Column="1" Text="{Binding Header}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding AccessibleHeader}" />
+                <Button Grid.Column="2"
+                        Classes="subtle tabClose"
+                        Margin="6,0,0,0"
+                        Padding="4"
+                        Command="{Binding CloseCommand}"
+                        AutomationProperties.Name="{x:Static res:Strings.Shell_CloseTab}"
+                        ToolTip.Tip="{x:Static res:Strings.Shell_CloseTab}">
+                  <Path Classes="icon" Data="{StaticResource IconClose}" Width="12" Height="12" />
+                </Button>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <Button Classes="subtle"
+                Margin="0,6,0,0"
+                VerticalAlignment="Center"
+                Command="{Binding NewTabCommand}"
+                AutomationProperties.Name="{x:Static res:Strings.Shell_NewTab}"
+                ToolTip.Tip="{x:Static res:Strings.Shell_NewTab}">
+          <Path Classes="icon" Data="{StaticResource IconPlus}" />
+        </Button>
+      </StackPanel>
+      <Border Grid.Column="2" MinWidth="{StaticResource TitleBarDragMinWidth}" Background="Transparent" chrome:WindowDecorationProperties.ElementRole="TitleBar" />
+      <Border Grid.Column="3" Width="{StaticResource CaptionButtonsWidth}" />
+    </Grid>
+
+    <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*">
+      <favourites:FavouritesPaneView Grid.Column="0"
+                                     DataContext="{Binding Favourites}"
+                                     Width="{StaticResource FavouritesPaneDefaultWidth}"
+                                     IsVisible="{Binding $parent[Window].((shell:MainWindowViewModel)DataContext).IsFavouritesPaneVisible}" />
+      <GridSplitter Grid.Column="1" Width="4" Background="{DynamicResource StrokeDividerBrush}"
+                    IsVisible="{Binding IsFavouritesPaneVisible}" ResizeDirection="Columns" />
+
+      <Border Grid.Column="2" Classes="pane" BorderThickness="1,1,0,0" CornerRadius="8,0,0,0">
+        <Panel>
+          <TextBlock Text="{x:Static res:Strings.Shell_Starting}" IsVisible="{Binding IsStarting}"
+                     HorizontalAlignment="Center" VerticalAlignment="Center" Classes="secondary" />
+
+          <StackPanel IsVisible="{Binding IsNoConfig}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" MaxWidth="520">
+            <TextBlock Text="{x:Static res:Strings.Shell_NoConfig_Title}" Classes="subtitle" TextWrapping="Wrap"
+                       AutomationProperties.AutomationId="Shell.EmptyState.Title" />
+            <TextBlock Text="{x:Static res:Strings.Shell_NoConfig_Detail}" Classes="secondary" TextWrapping="Wrap" />
+            <Button Content="{x:Static res:Strings.Shell_OpenConfig}" Command="{Binding OpenConfigCommand}" Classes="accent"
+                    infra:FocusRequest.Token="{Binding EmptyStateFocusToken}"
+                    AutomationProperties.AutomationId="Shell.OpenConfig" />
+            <TextBlock Text="{x:Static res:Strings.Shell_RecentConfigs}" Classes="bodyStrong" Margin="0,8,0,0" IsVisible="{Binding HasRecentConfigs}" />
+            <ItemsControl ItemsSource="{Binding RecentConfigs}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <Button Classes="subtle" Content="{Binding}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                          Command="{Binding $parent[Window].((shell:MainWindowViewModel)DataContext).OpenRecentConfigCommand}" CommandParameter="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsConfigUnavailable}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" MaxWidth="560">
+            <TextBlock Text="{x:Static res:Strings.Shell_ConfigUnavailable_Title}" Classes="subtitle" />
+            <TextBlock Text="{Binding ConfigProblemMessage}" TextWrapping="Wrap" AutomationProperties.AutomationId="Shell.ConfigProblem" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Content="{x:Static res:Strings.Shell_Retry}" Command="{Binding RetryConfigCommand}" Classes="accent"
+                      infra:FocusRequest.Token="{Binding EmptyStateFocusToken}" />
+              <Button Content="{x:Static res:Strings.Shell_OpenAnother}" Command="{Binding OpenConfigCommand}" />
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsReadyWithoutTabs}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+            <TextBlock Text="{x:Static res:Strings.Shell_NoTabs_Title}" Classes="subtitle" />
+            <TextBlock Text="{x:Static res:Strings.Shell_NoTabs_Detail}" Classes="secondary" />
+            <Button Content="{x:Static res:Strings.Shell_OpenTab}" Command="{Binding NewTabCommand}" Classes="accent"
+                    infra:FocusRequest.Token="{Binding EmptyStateFocusToken}" HorizontalAlignment="Left" />
+          </StackPanel>
+
+          <ContentControl Content="{Binding SelectedTab}" IsVisible="{Binding IsReadyWithTabs}">
+            <ContentControl.ContentTemplate>
+              <DataTemplate x:DataType="tabs:TabViewModel">
+                <tabs:TabView />
+              </DataTemplate>
+            </ContentControl.ContentTemplate>
+          </ContentControl>
+        </Panel>
+      </Border>
+    </Grid>
+
+    <Border Grid.Row="2" Padding="14,4" Background="{DynamicResource SurfaceBaseBrush}">
+      <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto,Auto">
+        <TextBlock Grid.Column="0"
+                   Text="{Binding StatusMessage}"
+                   Classes="caption secondary"
+                   TextTrimming="CharacterEllipsis"
+                   AutomationProperties.Name="{Binding StatusMessage}"
+                   AutomationProperties.LiveSetting="Polite"
+                   AutomationProperties.AutomationId="Shell.StatusMessage" />
+        <Button Grid.Column="1" Classes="subtle" Command="{Binding ShowPendingProblemsCommand}" IsVisible="{Binding HasPendingProblems}"
+                Content="{x:Static res:Strings.Shell_ShowProblems}"
+                AutomationProperties.AutomationId="Shell.ShowProblems" />
+        <Button Grid.Column="2" Classes="subtle" Command="{Binding EditConfigCommand}"
+                ToolTip.Tip="{x:Static infra:CommandTips.EditConfig}"
+                AutomationProperties.Name="{x:Static res:Strings.Palette_EditConfig}"
+                AutomationProperties.AutomationId="Shell.EditConfig"
+                IsVisible="{Binding ConfigFileName, Converter={x:Static ObjectConverters.IsNotNull}}">
+          <Path Classes="icon" Data="{StaticResource IconEdit}" />
+        </Button>
+        <Button Grid.Column="3" Classes="subtle" Command="{Binding ReloadConfigCommand}"
+                ToolTip.Tip="{x:Static res:Strings.Shell_ReloadConfig}"
+                AutomationProperties.Name="{x:Static res:Strings.Shell_ReloadConfig}"
+                IsVisible="{Binding ConfigFileName, Converter={x:Static ObjectConverters.IsNotNull}}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Path Classes="icon" Data="{StaticResource IconConfig}" />
+            <TextBlock Text="{Binding ConfigFileName}" Classes="caption secondary" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+        <Button Grid.Column="4" Classes="subtle" Command="{Binding OpenPaletteCommand}"
+                ToolTip.Tip="{x:Static infra:CommandTips.CommandPalette}"
+                AutomationProperties.Name="{x:Static res:Strings.Palette_Title}"
+                AutomationProperties.AutomationId="Shell.OpenPalette">
+          <Path Classes="icon" Data="{StaticResource IconPalette}" />
+        </Button>
+        <Button Grid.Column="5" Classes="subtle" Command="{Binding ToggleFavouritesPaneCommand}"
+                ToolTip.Tip="{x:Static res:Strings.Shell_ToggleFavourites}"
+                AutomationProperties.Name="{x:Static res:Strings.Shell_ToggleFavourites}">
+          <Path Classes="icon" Data="{StaticResource IconPane}" />
+        </Button>
+        <Button Grid.Column="6" Classes="subtle" Command="{Binding ShowAboutCommand}"
+                ToolTip.Tip="{x:Static res:Strings.Shortcut_About}"
+                AutomationProperties.Name="{x:Static res:Strings.Shell_About}">
+          <Path Classes="icon" Data="{StaticResource IconUnknown}" />
+        </Button>
+      </Grid>
+    </Border>
+
+    <Panel Grid.Row="0" Grid.RowSpan="3" IsVisible="{Binding Palette.IsOpen}">
+      <Border Background="{DynamicResource ScrimBrush}" infra:PointerCommands.TapCommand="{Binding Palette.CloseCommand}" />
+      <Border Classes="palette" x:DataType="palette:CommandPaletteViewModel" DataContext="{Binding Palette}"
+              AutomationProperties.Name="{x:Static res:Strings.Palette_Title}">
+        <Border.KeyBindings>
+          <KeyBinding Gesture="Escape" Command="{Binding CloseCommand}" />
+        </Border.KeyBindings>
+        <StackPanel Spacing="6">
+          <TextBox Text="{Binding FilterText}" PlaceholderText="{x:Static res:Strings.Palette_Watermark}"
+                   AutomationProperties.Name="{x:Static res:Strings.Palette_Watermark}"
+                   AutomationProperties.AutomationId="Palette.Filter"
+                   infra:FocusRequest.Token="{Binding FocusToken}">
+            <TextBox.InnerLeftContent>
+              <Path Classes="icon" Data="{StaticResource IconPalette}" Margin="8,0,0,0" Stroke="{DynamicResource TextSecondaryBrush}" />
+            </TextBox.InnerLeftContent>
+            <TextBox.KeyBindings>
+              <KeyBinding Gesture="Down" Command="{Binding MoveDownCommand}" />
+              <KeyBinding Gesture="Up" Command="{Binding MoveUpCommand}" />
+              <KeyBinding Gesture="Enter" Command="{Binding RunCommand}" />
+            </TextBox.KeyBindings>
+          </TextBox>
+          <ListBox Classes="rows palette" ItemsSource="{Binding Matches}" SelectedItem="{Binding SelectedEntry}"
+                   MaxHeight="{StaticResource PaletteListMaxHeight}"
+                   AutomationProperties.Name="{x:Static res:Strings.Palette_Title}"
+                   AutomationProperties.AutomationId="Palette.List">
+            <ListBox.Styles>
+              <Style Selector="ListBoxItem" x:DataType="palette:PaletteEntry">
+                <Setter Property="AutomationProperties.Name" Value="{Binding Title}" />
+                <Setter Property="AutomationProperties.HelpText" Value="{Binding AccessibleDescription}" />
+              </Style>
+            </ListBox.Styles>
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="palette:PaletteEntry">
+                <Grid ColumnDefinitions="*,Auto,Auto" Background="Transparent"
+                      infra:PointerCommands.TapCommand="{Binding $parent[ListBox].((palette:CommandPaletteViewModel)DataContext).RunCommand}"
+                      infra:PointerCommands.CommandParameter="{Binding}">
+                  <TextBlock Grid.Column="0" Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{Binding Category}" Classes="caption secondary" Margin="12,0" VerticalAlignment="Center" />
+                  <Border Grid.Column="2" Classes="keycap" IsVisible="{Binding HasShortcut}">
+                    <TextBlock Text="{Binding Shortcut}" Classes="caption" />
+                  </Border>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock Text="{x:Static res:Strings.Palette_NoMatches}" IsVisible="{Binding HasNoMatches}" Classes="secondary" Margin="8,4,8,8" />
+        </StackPanel>
+      </Border>
+    </Panel>
   </Grid>
 </Window>

@@ -1,0 +1,40 @@
+namespace Jbx.Core.Config;
+
+public enum ConfigErrorCode
+{
+    ConfigTooLarge,
+    EmptyConfig,
+    YamlSyntax,
+    TabIndentation,
+    JsonSyntax,
+    UnsupportedTag,
+    TooManyAliases,
+    TooComplex,
+    MultipleDocuments,
+    ExpectedMapping,
+    ExpectedSequence,
+    ExpectedText,
+    MissingField,
+    DuplicateKey,
+    InvalidBoolean,
+    InvalidNumber,
+    UnknownKey,
+
+    UnsupportedVersion,
+    NoEnvironments,
+    InvalidId,
+    DuplicateEnvironmentId,
+    DuplicateApplicationId,
+    DuplicateFolderLabel,
+    InvalidFolderType,
+    InvalidGlobalName,
+    NegativeRetentionDays,
+    InvalidLogFilePattern,
+    InvalidExternalLogUrl,
+    InvalidClassification,
+
+    MalformedToken,
+    UnknownToken,
+    UnsetEnvironmentVariable,
+    InvalidDateFormat,
+}

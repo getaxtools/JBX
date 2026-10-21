@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dialogs="using:Jbx.Desktop.Features.Dialogs"
+        xmlns:res="using:Jbx.Desktop.Resources"
+        x:Class="Jbx.Desktop.Features.Dialogs.ConfigProblemsWindow"
+        x:DataType="dialogs:ConfigProblemsViewModel"
+        Title="{x:Static res:Strings.Problems_Title}"
+        Width="640" Height="480" MinWidth="420" MinHeight="300"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource SurfaceCardBrush}">
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Escape" Command="{Binding CloseCommand}" />
+  </Window.KeyBindings>
+  <Grid Margin="20" RowDefinitions="Auto,Auto,Auto,*,Auto" >
+    <TextBlock Text="{x:Static res:Strings.Problems_Title}" Classes="subtitle" />
+    <TextBlock Grid.Row="1" Text="{Binding Intro}" TextWrapping="Wrap" Margin="0,8,0,0" />
+    <TextBlock Grid.Row="2" Text="{Binding Outcome}" Classes="secondary" TextWrapping="Wrap" Margin="0,4,0,12" />
+    <ListBox Grid.Row="3" ItemsSource="{Binding Problems}" SelectedItem="{Binding Selected}"
+             AutomationProperties.Name="{x:Static res:Strings.Problems_Title}" AutomationProperties.AutomationId="Problems.List">
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem" x:DataType="dialogs:ConfigProblemLine">
+          <Setter Property="AutomationProperties.Name" Value="{Binding}" />
+        </Style>
+      </ListBox.Styles>
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="dialogs:ConfigProblemLine">
+          <StackPanel Spacing="2" Margin="0,4">
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Where}" Classes="caption secondary" IsVisible="{Binding HasWhere}" />
+          </StackPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <Grid Grid.Row="4" ColumnDefinitions="*,Auto,Auto" Margin="0,12,0,0">
+      <TextBlock Text="{Binding ActionMessage}" Classes="caption secondary" VerticalAlignment="Center"
+                 AutomationProperties.Name="{Binding ActionMessage}" AutomationProperties.LiveSetting="Polite" />
+      <Button Grid.Column="1" Content="{x:Static res:Strings.Problems_CopyAll}" Command="{Binding CopyAllCommand}" Margin="0,0,8,0" />
+      <Button Grid.Column="2" Content="{x:Static res:Strings.Dialog_Close}" Command="{Binding CloseCommand}" Classes="accent" IsDefault="True" IsCancel="True" />
+    </Grid>
+  </Grid>
+</Window>

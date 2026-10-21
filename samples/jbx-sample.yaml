@@ -1,0 +1,66 @@
+version: 1
+
+# A demo config. Run scripts/New-JbxDemo.ps1 first to create the folders it points at.
+globals:
+  deadShare: "\\\\192.0.2.10\\AppLogs"
+
+environments:
+  - id: dev
+    displayName: Development
+  - id: uat
+    displayName: UAT
+  - id: prod
+    displayName: Production
+    serverHost: prod-cluster-01.contoso.test
+
+applications:
+  - id: billing-portal
+    displayName: Billing Portal
+    description: Invoices, statements and payment runs
+    owner: Finance Platform Team
+    tags: [finance, tier1]
+    classification: sox
+    folders:
+      - type: api
+        label: Billing API
+        pathTemplate: "{{envvar:USERPROFILE}}\\JBX-Demo\\{{env}}\\BillingPortal\\Api\\logs"
+        logFilePattern: "api-*.log"
+        retentionDays: 30
+        notes: Rotates daily at midnight UTC
+      - type: web
+        label: IIS Site Logs
+        pathTemplate: "{{envvar:USERPROFILE}}\\JBX-Demo\\{{env}}\\BillingPortal\\Web\\W3SVC1"
+      - type: "custom:etl"
+        label: Nightly ETL
+        pathTemplate: "{{envvar:USERPROFILE}}\\JBX-Demo\\{{env}}\\BillingPortal\\Etl"
+
+  - id: orders-service
+    displayName: Orders Service
+    owner: Commerce Team
+    tags: [commerce, tier1]
+    folders:
+      - type: backgroundservice
+        label: Order Scheduler
+        pathTemplate: "{{envvar:USERPROFILE}}\\JBX-Demo\\{{env}}\\Orders\\Scheduler\\logs"
+      - type: python
+        label: Fulfilment Sync
+        pathTemplate: "{{envvar:USERPROFILE}}\\JBX-Demo\\{{env}}\\Orders\\FulfilmentSync"
+        logFilePattern: "*.log"
+
+  - id: payments-gateway
+    displayName: Payments Gateway
+    owner: Payments Team
+    tags: [finance]
+    folders:
+      - type: api
+        label: Gateway API (unreachable share)
+        pathTemplate: "{{deadShare}}\\{{env}}\\PaymentsGateway\\Api"
+
+  - id: reporting
+    displayName: Reporting
+    owner: Data Team
+    tags: [data]
+    folders:
+      - type: node
+        label: Report Renderer (not deployed)
+        pathTemplate: "{{envvar:USERPROFILE}}\\JBX-Demo\\{{env}}\\Reporting\\Renderer"

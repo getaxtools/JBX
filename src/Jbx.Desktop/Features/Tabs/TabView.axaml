@@ -1,0 +1,282 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:tabs="using:Jbx.Desktop.Features.Tabs"
+             xmlns:rows="using:Jbx.Desktop.Features.FolderList"
+             xmlns:details="using:Jbx.Desktop.Features.Details"
+             xmlns:viewer="using:Jbx.Desktop.Features.LogViewer"
+             xmlns:controls="using:Jbx.Desktop.Controls"
+             xmlns:infra="using:Jbx.Desktop.Infrastructure"
+             xmlns:res="using:Jbx.Desktop.Resources"
+             xmlns:config="using:Jbx.Core.Config"
+             x:Class="Jbx.Desktop.Features.Tabs.TabView"
+             x:DataType="tabs:TabViewModel">
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+    <Border Grid.Row="0" Classes="documentStrip" IsVisible="{Binding HasDocuments}">
+      <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+        <StackPanel Orientation="Horizontal" Spacing="2">
+          <Button Classes="documentTab" Classes.current="{Binding IsBrowsing}" Command="{Binding ShowFoldersCommand}"
+                  AutomationProperties.Name="{x:Static res:Strings.Tab_Folders}" AutomationProperties.AutomationId="Tab.Folders">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon" Data="{StaticResource IconFolder}" />
+              <TextBlock Text="{x:Static res:Strings.Tab_Folders}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+          <ListBox Classes="documentTabs" ItemsSource="{Binding Documents}" SelectedItem="{Binding SelectedDocument}"
+                   AutomationProperties.Name="{x:Static res:Strings.Tab_OpenFiles}" AutomationProperties.AutomationId="Tab.Documents">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="viewer:LogViewerViewModel">
+                <Grid ColumnDefinitions="Auto,*,Auto" Background="Transparent" ToolTip.Tip="{Binding PathText}"
+                      infra:PointerCommands.MiddleClickCommand="{Binding $parent[ListBox].((tabs:TabViewModel)DataContext).CloseDocumentCommand}"
+                      infra:PointerCommands.CommandParameter="{Binding}">
+                  <Path Grid.Column="0" Classes="icon" Data="{StaticResource IconFile}" Margin="0,0,6,0" />
+                  <TextBlock Grid.Column="1" Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                  <Button Grid.Column="2" Classes="subtle tabClose" Margin="6,0,0,0" Padding="4"
+                          Command="{Binding $parent[ListBox].((tabs:TabViewModel)DataContext).CloseDocumentCommand}" CommandParameter="{Binding}"
+                          AutomationProperties.Name="{x:Static res:Strings.Tab_CloseFile}" ToolTip.Tip="{x:Static res:Strings.Tab_CloseFile}">
+                    <Path Classes="icon" Data="{StaticResource IconClose}" Width="12" Height="12" />
+                  </Button>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+
+    <Border Grid.Row="1" Classes="commandBar" IsVisible="{Binding IsBrowsing}">
+      <StackPanel Orientation="Horizontal" Spacing="2" AutomationProperties.Name="{x:Static res:Strings.CommandBar_Name}">
+        <Button Classes="command" Command="{Binding OpenFileCommand}"
+                ToolTip.Tip="{x:Static infra:CommandTips.OpenFile}"
+                AutomationProperties.Name="{x:Static res:Strings.Details_OpenFile}"
+                AutomationProperties.AutomationId="CommandBar.Open">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Path Classes="icon" Data="{StaticResource IconFile}" />
+            <TextBlock Text="{x:Static res:Strings.Details_OpenFile}" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+        <Button Classes="command" Command="{Binding OpenInExplorerCommand}"
+                ToolTip.Tip="{x:Static infra:CommandTips.OpenInExplorer}"
+                AutomationProperties.Name="{x:Static res:Strings.CommandBar_OpenInExplorer}"
+                AutomationProperties.AutomationId="CommandBar.OpenInExplorer">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Path Classes="icon" Data="{StaticResource IconOpenExternal}" />
+            <TextBlock Text="{x:Static res:Strings.CommandBar_OpenInExplorer}" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+        <Rectangle Classes="commandSeparator" />
+        <Button Classes="command" Command="{Binding CopyPathCommand}"
+                ToolTip.Tip="{x:Static infra:CommandTips.CopyPath}"
+                AutomationProperties.Name="{x:Static res:Strings.Details_CopyPath}"
+                AutomationProperties.AutomationId="CommandBar.CopyPath">
+          <Path Classes="icon" Data="{StaticResource IconCopy}" />
+        </Button>
+        <Button Classes="command" Command="{Binding ToggleFavouriteCommand}"
+                ToolTip.Tip="{x:Static infra:CommandTips.ToggleFavourite}"
+                AutomationProperties.Name="{x:Static res:Strings.CommandBar_Favourite}"
+                AutomationProperties.AutomationId="CommandBar.Favourite">
+          <Panel>
+            <Path Classes="icon favourite" Data="{StaticResource IconStar}" IsVisible="{Binding IsFavouriteSelected}" />
+            <Path Classes="icon" Data="{StaticResource IconStar}" IsVisible="{Binding !IsFavouriteSelected}" />
+          </Panel>
+        </Button>
+        <Rectangle Classes="commandSeparator" />
+        <Button Classes="command" Command="{Binding ExpandAllCommand}"
+                ToolTip.Tip="{x:Static infra:CommandTips.ExpandAll}"
+                AutomationProperties.Name="{x:Static res:Strings.CommandBar_ExpandAll}"
+                AutomationProperties.AutomationId="CommandBar.ExpandAll">
+          <Path Classes="icon" Data="{StaticResource IconExpandAll}" />
+        </Button>
+        <Button Classes="command" Command="{Binding CollapseAllCommand}"
+                ToolTip.Tip="{x:Static infra:CommandTips.CollapseAll}"
+                AutomationProperties.Name="{x:Static res:Strings.CommandBar_CollapseAll}"
+                AutomationProperties.AutomationId="CommandBar.CollapseAll">
+          <Path Classes="icon" Data="{StaticResource IconCollapseAll}" />
+        </Button>
+        <Rectangle Classes="commandSeparator" />
+        <Button Classes="command" Command="{Binding RefreshFoldersCommand}"
+                ToolTip.Tip="{x:Static infra:CommandTips.Refresh}"
+                AutomationProperties.Name="{x:Static res:Strings.Toolbar_Refresh}"
+                AutomationProperties.AutomationId="CommandBar.Refresh">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Path Classes="icon" Data="{StaticResource IconRefresh}" />
+            <TextBlock Text="{x:Static res:Strings.Toolbar_Refresh}" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+    </Border>
+
+    <WrapPanel Grid.Row="2" Margin="12,8,12,6" ItemSpacing="8" LineSpacing="6" IsVisible="{Binding IsBrowsing}">
+      <ComboBox ItemsSource="{Binding Environments}"
+                SelectedItem="{Binding Environment}"
+                MinWidth="160"
+                AutomationProperties.Name="{x:Static res:Strings.Toolbar_Environment}"
+                ToolTip.Tip="{x:Static res:Strings.Toolbar_Environment}">
+        <ComboBox.ItemTemplate>
+          <DataTemplate x:DataType="config:DeploymentEnvironment">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Path Classes="icon production" Data="{StaticResource IconProduction}" IsVisible="{Binding IsProductionLike}" />
+              <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
+            </StackPanel>
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
+      </ComboBox>
+      <TextBox Text="{Binding SearchText}"
+               Width="{StaticResource SearchBoxWidth}"
+               PlaceholderText="{x:Static res:Strings.Toolbar_SearchWatermark}"
+               AutomationProperties.Name="{x:Static res:Strings.Toolbar_Search}"
+               AutomationProperties.AutomationId="Tab.Search"
+               infra:FocusRequest.Token="{Binding SearchFocusToken}">
+        <TextBox.InnerLeftContent>
+          <Path Classes="icon" Data="{StaticResource IconSearch}" Margin="8,0,0,0" Stroke="{DynamicResource TextSecondaryBrush}" />
+        </TextBox.InnerLeftContent>
+        <TextBox.KeyBindings>
+          <KeyBinding Gesture="Escape" Command="{Binding ClearSearchCommand}" />
+          <KeyBinding Gesture="Down" Command="{Binding FocusListCommand}" />
+          <KeyBinding Gesture="Enter" Command="{Binding FocusListCommand}" />
+        </TextBox.KeyBindings>
+      </TextBox>
+      <ComboBox ItemsSource="{Binding TypeOptions}" SelectedItem="{Binding SelectedType}" MinWidth="120"
+                AutomationProperties.Name="{x:Static res:Strings.Toolbar_Type}" ToolTip.Tip="{x:Static res:Strings.Toolbar_Type}" />
+      <ComboBox ItemsSource="{Binding TagOptions}" SelectedItem="{Binding SelectedTag}" MinWidth="110"
+                AutomationProperties.Name="{x:Static res:Strings.Toolbar_Tag}" ToolTip.Tip="{x:Static res:Strings.Toolbar_Tag}" />
+      <ComboBox ItemsSource="{Binding OwnerOptions}" SelectedItem="{Binding SelectedOwner}" MinWidth="130"
+                AutomationProperties.Name="{x:Static res:Strings.Toolbar_Owner}" ToolTip.Tip="{x:Static res:Strings.Toolbar_Owner}" />
+      <ComboBox ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SelectedSort}" MinWidth="130"
+                AutomationProperties.Name="{x:Static res:Strings.Toolbar_Sort}" ToolTip.Tip="{x:Static res:Strings.Toolbar_Sort}" />
+      <Button Classes="subtle" Command="{Binding ClearFiltersCommand}" IsVisible="{Binding IsFiltered}"
+              AutomationProperties.Name="{x:Static res:Strings.Toolbar_ClearFilters}">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <Path Classes="icon" Data="{StaticResource IconFilterClear}" />
+          <TextBlock Text="{x:Static res:Strings.Toolbar_ClearFilters}" VerticalAlignment="Center" />
+        </StackPanel>
+      </Button>
+    </WrapPanel>
+
+    <Border Grid.Row="3" Classes="productionBanner" IsVisible="{Binding IsProduction}">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Path Classes="icon production" Data="{StaticResource IconProduction}" />
+        <TextBlock Text="{x:Static res:Strings.Tab_ProductionBanner}" Classes="production" VerticalAlignment="Center" TextWrapping="Wrap" />
+      </StackPanel>
+    </Border>
+
+    <ContentControl Grid.Row="4" Content="{Binding SelectedDocument}" IsVisible="{Binding !IsBrowsing}">
+      <ContentControl.ContentTemplate>
+        <DataTemplate x:DataType="viewer:LogViewerViewModel">
+          <viewer:LogViewerView />
+        </DataTemplate>
+      </ContentControl.ContentTemplate>
+    </ContentControl>
+
+    <Grid Grid.Row="4" ColumnDefinitions="*,Auto,Auto" IsVisible="{Binding IsBrowsing}">
+      <Panel Grid.Column="0">
+        <ListBox x:Name="Rows"
+                 Classes="rows"
+                 ItemsSource="{Binding Rows}"
+                 SelectedItem="{Binding SelectedRow}"
+                 SelectionMode="Single"
+                 IsTextSearchEnabled="True"
+                 AutomationProperties.Name="{x:Static res:Strings.Tab_FolderList}"
+                 AutomationProperties.AutomationId="Tab.Rows"
+                 infra:FocusRequest.Token="{Binding ListFocusToken}">
+          <ListBox.KeyBindings>
+            <KeyBinding Gesture="Right" Command="{Binding ExpandSelectedCommand}" />
+            <KeyBinding Gesture="Left" Command="{Binding CollapseSelectedCommand}" />
+            <KeyBinding Gesture="Enter" Command="{Binding ActivateSelectedCommand}" />
+            <KeyBinding Gesture="{x:Static infra:CommandCatalog.ExpandAll}" Command="{Binding ExpandAllCommand}" />
+            <KeyBinding Gesture="{x:Static infra:CommandCatalog.ToggleFavourite}" Command="{Binding ToggleFavouriteCommand}" />
+            <KeyBinding Gesture="{x:Static infra:CommandCatalog.OpenInExplorer}" Command="{Binding OpenInExplorerCommand}" />
+            <KeyBinding Gesture="{x:Static infra:CommandCatalog.CopyPath}" Command="{Binding CopyPathCommand}" />
+          </ListBox.KeyBindings>
+          <ListBox.Styles>
+            <Style Selector="ListBoxItem" x:DataType="rows:RowViewModel">
+              <Setter Property="AutomationProperties.Name" Value="{Binding Name}" />
+              <Setter Property="AutomationProperties.HelpText" Value="{Binding AccessibleDescription}" />
+            </Style>
+          </ListBox.Styles>
+          <ListBox.DataTemplates>
+            <DataTemplate DataType="rows:ApplicationRowViewModel">
+              <Grid ColumnDefinitions="Auto,*,Auto,Auto" Background="Transparent">
+                <Button Grid.Column="0" Classes="chevron"
+                        Command="{Binding Actions.ToggleExpandCommand}" CommandParameter="{Binding}"
+                        AutomationProperties.Name="{Binding ToggleText}">
+                  <Panel>
+                    <Path Classes="icon" Data="{StaticResource IconChevronRight}" IsVisible="{Binding !IsExpanded}" />
+                    <Path Classes="icon" Data="{StaticResource IconChevronDown}" IsVisible="{Binding IsExpanded}" />
+                  </Panel>
+                </Button>
+                <TextBlock Grid.Column="1" Text="{Binding Name}" Classes="bodyStrong" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="{Binding ProblemSummary}" Classes="caption problem" IsVisible="{Binding HasProblems}" Margin="8,0" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="3" Text="{Binding FolderCountText}" Classes="caption secondary" VerticalAlignment="Center" />
+              </Grid>
+            </DataTemplate>
+            <DataTemplate DataType="rows:FolderRowViewModel">
+              <Grid ColumnDefinitions="Auto,Auto,110,*,Auto,Auto" Margin="{StaticResource FolderRowMargin}" Background="Transparent"
+                    ToolTip.Tip="{Binding PathText}">
+                <Grid.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Header="{x:Static res:Strings.Details_OpenInExplorer}" Command="{Binding Actions.OpenInExplorerCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.OpenInExplorer}" />
+                    <MenuItem Header="{x:Static res:Strings.Details_CopyPath}" Command="{Binding Actions.CopyPathCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.CopyPath}" />
+                    <MenuItem Header="{x:Static res:Strings.Details_AddFavourite}" Command="{Binding Actions.ToggleFavouriteCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.ToggleFavourite}" IsVisible="{Binding !IsFavourite}" />
+                    <MenuItem Header="{x:Static res:Strings.Details_RemoveFavourite}" Command="{Binding Actions.ToggleFavouriteCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.ToggleFavourite}" IsVisible="{Binding IsFavourite}" />
+                  </ContextMenu>
+                </Grid.ContextMenu>
+                <Button Grid.Column="0" Classes="chevron"
+                        Command="{Binding Actions.ToggleExpandCommand}" CommandParameter="{Binding}"
+                        AutomationProperties.Name="{Binding ToggleText}">
+                  <Panel>
+                    <Path Classes="icon" Data="{StaticResource IconChevronRight}" IsVisible="{Binding !IsExpanded}" />
+                    <Path Classes="icon" Data="{StaticResource IconChevronDown}" IsVisible="{Binding IsExpanded}" />
+                  </Panel>
+                </Button>
+                <controls:StatusBadge Grid.Column="1" Reachability="{Binding Status}" ShowLabel="False" Margin="0,0,8,0" />
+                <TextBlock Grid.Column="2" Text="{Binding StatusLabel}" Classes="caption secondary" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="3" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                <Path Grid.Column="4" Classes="icon favourite" Data="{StaticResource IconStar}" IsVisible="{Binding IsFavourite}" Margin="8,0" />
+                <TextBlock Grid.Column="5" Text="{Binding TypeText}" Classes="caption secondary" VerticalAlignment="Center" />
+              </Grid>
+            </DataTemplate>
+            <DataTemplate DataType="rows:FileItemRowViewModel">
+              <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="{StaticResource FileRowMargin}" Background="Transparent"
+                    infra:PointerCommands.DoubleTapCommand="{Binding Actions.OpenFileCommand}"
+                    infra:PointerCommands.CommandParameter="{Binding}"
+                    ToolTip.Tip="{Binding LastWriteExact}">
+                <Grid.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Header="{x:Static res:Strings.Details_OpenFile}" Command="{Binding Actions.OpenFileCommand}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{x:Static res:Strings.Viewer_OpenWithDefaultApp}" Command="{Binding Actions.OpenWithDefaultAppCommand}" CommandParameter="{Binding}" />
+                    <MenuItem Header="{x:Static res:Strings.Details_ShowInFolder}" Command="{Binding Actions.OpenInExplorerCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.OpenInExplorer}" />
+                    <MenuItem Header="{x:Static res:Strings.Details_CopyFilePath}" Command="{Binding Actions.CopyPathCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.CopyPath}" />
+                    <MenuItem Header="{x:Static res:Strings.Details_AddFavourite}" Command="{Binding Actions.ToggleFavouriteCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.ToggleFavourite}" IsVisible="{Binding !IsFavourite}" />
+                    <MenuItem Header="{x:Static res:Strings.Details_RemoveFavourite}" Command="{Binding Actions.ToggleFavouriteCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.ToggleFavourite}" IsVisible="{Binding IsFavourite}" />
+                  </ContextMenu>
+                </Grid.ContextMenu>
+                <Path Grid.Column="0" Classes="icon" Data="{StaticResource IconFile}" Margin="0,0,8,0" />
+                <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                <Path Grid.Column="2" Classes="icon favourite" Data="{StaticResource IconStar}" IsVisible="{Binding IsFavourite}" Margin="8,0" />
+                <TextBlock Grid.Column="3" Text="{Binding LastWriteText}" Classes="caption secondary" Margin="8,0" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="4" Text="{Binding SizeText}" Classes="caption secondary" MinWidth="56" TextAlignment="Right" VerticalAlignment="Center" />
+              </Grid>
+            </DataTemplate>
+            <DataTemplate DataType="rows:FolderNoteRowViewModel">
+              <TextBlock Margin="{StaticResource FileRowMargin}" Text="{Binding Text}"
+                         Classes="caption secondary" Classes.problem="{Binding IsProblem}"
+                         TextWrapping="Wrap" VerticalAlignment="Center" />
+            </DataTemplate>
+          </ListBox.DataTemplates>
+        </ListBox>
+        <TextBlock Text="{Binding NoResultsText}" IsVisible="{Binding HasNoResults}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24" TextWrapping="Wrap"
+                   Classes="secondary" AutomationProperties.AutomationId="Tab.NoResults" />
+      </Panel>
+      <GridSplitter Grid.Column="1" Width="4" Background="{DynamicResource StrokeDividerBrush}" ResizeDirection="Columns" />
+      <details:DetailsView Grid.Column="2" DataContext="{Binding Details}" Width="{StaticResource DetailsPaneDefaultWidth}" />
+    </Grid>
+
+    <Grid Grid.Row="5" ColumnDefinitions="*,Auto" Margin="14,4" IsVisible="{Binding IsBrowsing}">
+      <TextBlock Grid.Column="0" Text="{Binding ResultSummary}" Classes="caption secondary"
+                 AutomationProperties.Name="{Binding ResultSummary}" AutomationProperties.LiveSetting="Polite"
+                 AutomationProperties.AutomationId="Tab.ResultSummary" />
+      <TextBlock Grid.Column="1" Text="{Binding ProgressText}" Classes="caption secondary" />
+    </Grid>
+  </Grid>
+</UserControl>

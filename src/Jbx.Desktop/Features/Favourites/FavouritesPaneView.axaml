@@ -1,0 +1,75 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:favourites="using:Jbx.Desktop.Features.Favourites"
+             xmlns:controls="using:Jbx.Desktop.Controls"
+             xmlns:infra="using:Jbx.Desktop.Infrastructure"
+             xmlns:res="using:Jbx.Desktop.Resources"
+             x:Class="Jbx.Desktop.Features.Favourites.FavouritesPaneView"
+             x:DataType="favourites:FavouritesPaneViewModel"
+             AutomationProperties.Name="{x:Static res:Strings.Favourites_Title}">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Grid ColumnDefinitions="*,Auto" Margin="12,8,6,4">
+      <TextBlock Text="{x:Static res:Strings.Favourites_Title}" Classes="bodyStrong" VerticalAlignment="Center"
+                 AutomationProperties.HeadingLevel="2" />
+      <Button Grid.Column="1" Classes="subtle" Command="{Binding AddPathCommand}"
+              AutomationProperties.Name="{x:Static res:Strings.Favourites_Add}"
+              ToolTip.Tip="{x:Static res:Strings.Favourites_Add}">
+        <Path Classes="icon" Data="{StaticResource IconPlus}" />
+      </Button>
+    </Grid>
+
+    <Panel Grid.Row="1">
+      <TextBlock Text="{x:Static res:Strings.Favourites_Empty}" IsVisible="{Binding IsEmpty}"
+                 Classes="caption secondary" TextWrapping="Wrap" Margin="12" />
+      <ListBox Classes="rows"
+               ItemsSource="{Binding Items}"
+               SelectedItem="{Binding SelectedItem}"
+               IsVisible="{Binding !IsEmpty}"
+               IsTextSearchEnabled="True"
+               AutomationProperties.Name="{x:Static res:Strings.Favourites_Title}"
+               infra:FocusRequest.Token="{Binding FocusToken}">
+        <ListBox.KeyBindings>
+          <KeyBinding Gesture="Enter" Command="{Binding OpenCommand}" />
+          <KeyBinding Gesture="{x:Static infra:CommandCatalog.RemoveFavourite}" Command="{Binding RemoveCommand}" />
+          <KeyBinding Gesture="{x:Static infra:CommandCatalog.RenameFavourite}" Command="{Binding RenameCommand}" />
+          <KeyBinding Gesture="{x:Static infra:CommandCatalog.MoveFavouriteUp}" Command="{Binding MoveUpCommand}" />
+          <KeyBinding Gesture="{x:Static infra:CommandCatalog.MoveFavouriteDown}" Command="{Binding MoveDownCommand}" />
+          <KeyBinding Gesture="{x:Static infra:CommandCatalog.OpenInExplorer}" Command="{Binding OpenInExplorerCommand}" />
+          <KeyBinding Gesture="{x:Static infra:CommandCatalog.CopyPath}" Command="{Binding CopyPathCommand}" />
+        </ListBox.KeyBindings>
+        <ListBox.Styles>
+          <Style Selector="ListBoxItem" x:DataType="favourites:FavouriteItemViewModel">
+            <Setter Property="AutomationProperties.Name" Value="{Binding Label}" />
+            <Setter Property="AutomationProperties.HelpText" Value="{Binding AccessibleDescription}" />
+          </Style>
+        </ListBox.Styles>
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="favourites:FavouriteItemViewModel">
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" Background="Transparent"
+                  ToolTip.Tip="{Binding PathText}"
+                  infra:PointerCommands.DoubleTapCommand="{Binding $parent[ListBox].((favourites:FavouritesPaneViewModel)DataContext).OpenCommand}"
+                  infra:PointerCommands.CommandParameter="{Binding}">
+              <Grid.ContextMenu>
+                <ContextMenu>
+                  <MenuItem Header="{x:Static res:Strings.Favourites_Open}" Command="{Binding $parent[ListBox].((favourites:FavouritesPaneViewModel)DataContext).OpenCommand}" CommandParameter="{Binding}" />
+                  <MenuItem Header="{x:Static res:Strings.Details_OpenInExplorer}" Command="{Binding $parent[ListBox].((favourites:FavouritesPaneViewModel)DataContext).OpenInExplorerCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.OpenInExplorer}" />
+                  <MenuItem Header="{x:Static res:Strings.Details_CopyPath}" Command="{Binding $parent[ListBox].((favourites:FavouritesPaneViewModel)DataContext).CopyPathCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.CopyPath}" />
+                  <MenuItem Header="{x:Static res:Strings.Favourites_Rename}" Command="{Binding $parent[ListBox].((favourites:FavouritesPaneViewModel)DataContext).RenameCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.RenameFavourite}" />
+                  <MenuItem Header="{x:Static res:Strings.Favourites_MoveUp}" Command="{Binding $parent[ListBox].((favourites:FavouritesPaneViewModel)DataContext).MoveUpCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.MoveFavouriteUp}" />
+                  <MenuItem Header="{x:Static res:Strings.Favourites_MoveDown}" Command="{Binding $parent[ListBox].((favourites:FavouritesPaneViewModel)DataContext).MoveDownCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.MoveFavouriteDown}" />
+                  <MenuItem Header="{x:Static res:Strings.Favourites_Remove}" Command="{Binding $parent[ListBox].((favourites:FavouritesPaneViewModel)DataContext).RemoveCommand}" CommandParameter="{Binding}" InputGesture="{x:Static infra:CommandCatalog.RemoveFavourite}" />
+                </ContextMenu>
+              </Grid.ContextMenu>
+              <controls:StatusBadge Grid.RowSpan="2" Reachability="{Binding Status}" ShowLabel="False" Margin="0,2,8,0" VerticalAlignment="Top" />
+              <TextBlock Grid.Column="1" Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+              <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding StatusLabel}" Classes="caption secondary" />
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Panel>
+
+    <TextBlock Grid.Row="2" Text="{Binding ActionMessage}" Classes="caption secondary" TextWrapping="Wrap" Margin="12,4,12,8"
+               AutomationProperties.Name="{Binding ActionMessage}" AutomationProperties.LiveSetting="Polite" />
+  </Grid>
+</UserControl>

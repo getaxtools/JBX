@@ -1,0 +1,176 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewer="using:Jbx.Desktop.Features.LogViewer"
+             xmlns:controls="using:Jbx.Desktop.Controls"
+             xmlns:infra="using:Jbx.Desktop.Infrastructure"
+             xmlns:res="using:Jbx.Desktop.Resources"
+             x:Class="Jbx.Desktop.Features.LogViewer.LogViewerView"
+             x:DataType="viewer:LogViewerViewModel"
+             AutomationProperties.Name="{Binding Title}">
+  <UserControl.KeyBindings>
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.NextMatch}" Command="{Binding NextMatchCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.PreviousMatch}" Command="{Binding PreviousMatchCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.GoToLine}" Command="{Binding GoToLineCommand}" />
+    <KeyBinding Gesture="{x:Static infra:CommandCatalog.ToggleFollow}" Command="{Binding ToggleFollowCommand}" />
+  </UserControl.KeyBindings>
+
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="16,10,12,4">
+      <StackPanel Spacing="2">
+        <TextBlock Text="{Binding Title}" Classes="bodyStrong" TextTrimming="CharacterEllipsis"
+                   AutomationProperties.HeadingLevel="2" AutomationProperties.AutomationId="Viewer.Title"
+                   ToolTip.Tip="{Binding PathText}" />
+        <TextBlock Text="{Binding Subtitle}" Classes="caption secondary" TextTrimming="CharacterEllipsis" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+        <Button Classes="command" Command="{Binding OpenWithDefaultAppCommand}"
+                AutomationProperties.Name="{x:Static res:Strings.Viewer_OpenWithDefaultApp}"
+                ToolTip.Tip="{x:Static res:Strings.Viewer_OpenWithDefaultApp}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Path Classes="icon" Data="{StaticResource IconOpenExternal}" />
+            <TextBlock Text="{x:Static res:Strings.Viewer_OpenWithDefaultApp}" VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
+        <Button Classes="command" Command="{Binding ShowInFolderCommand}"
+                AutomationProperties.Name="{x:Static res:Strings.Details_ShowInFolder}"
+                ToolTip.Tip="{x:Static res:Strings.Details_ShowInFolder}">
+          <Path Classes="icon" Data="{StaticResource IconFolder}" />
+        </Button>
+        <Button Classes="command" Command="{Binding CopyPathCommand}"
+                AutomationProperties.Name="{x:Static res:Strings.Details_CopyPath}"
+                ToolTip.Tip="{x:Static res:Strings.Details_CopyPath}">
+          <Path Classes="icon" Data="{StaticResource IconCopy}" />
+        </Button>
+        <Button Classes="command" Command="{Binding ReloadCommand}"
+                AutomationProperties.Name="{x:Static res:Strings.Viewer_Reload}"
+                ToolTip.Tip="{x:Static res:Strings.Viewer_Reload}">
+          <Path Classes="icon" Data="{StaticResource IconRefresh}" />
+        </Button>
+      </StackPanel>
+    </Grid>
+
+    <WrapPanel Grid.Row="1" Margin="12,4,12,6" ItemSpacing="6" LineSpacing="6">
+      <TextBox Text="{Binding SearchText}" Width="{StaticResource SearchBoxWidth}"
+               PlaceholderText="{x:Static res:Strings.Viewer_SearchWatermark}"
+               AutomationProperties.Name="{x:Static res:Strings.Viewer_Search}"
+               AutomationProperties.AutomationId="Viewer.Search"
+               infra:FocusRequest.Token="{Binding SearchFocusToken}">
+        <TextBox.InnerLeftContent>
+          <Path Classes="icon" Data="{StaticResource IconSearch}" Margin="8,0,0,0" Stroke="{DynamicResource TextSecondaryBrush}" />
+        </TextBox.InnerLeftContent>
+        <TextBox.InnerRightContent>
+          <TextBlock Text="{Binding MatchText}" Classes="caption secondary" VerticalAlignment="Center" Margin="0,0,8,0"
+                     AutomationProperties.AutomationId="Viewer.MatchText" />
+        </TextBox.InnerRightContent>
+        <TextBox.KeyBindings>
+          <KeyBinding Gesture="Enter" Command="{Binding NextMatchCommand}" />
+          <KeyBinding Gesture="Shift+Enter" Command="{Binding PreviousMatchCommand}" />
+          <KeyBinding Gesture="Escape" Command="{Binding ClearSearchCommand}" />
+        </TextBox.KeyBindings>
+      </TextBox>
+      <ToggleButton Classes="option" IsChecked="{Binding MatchCase}" Content="{x:Static res:Strings.Viewer_MatchCaseGlyph}"
+                    AutomationProperties.Name="{x:Static res:Strings.Viewer_MatchCase}" ToolTip.Tip="{x:Static res:Strings.Viewer_MatchCase}" />
+      <ToggleButton Classes="option" IsChecked="{Binding UseRegex}" Content="{x:Static res:Strings.Viewer_UseRegexGlyph}"
+                    AutomationProperties.Name="{x:Static res:Strings.Viewer_UseRegex}" ToolTip.Tip="{x:Static res:Strings.Viewer_UseRegex}" />
+      <Button Classes="command" Command="{Binding PreviousMatchCommand}"
+              AutomationProperties.Name="{x:Static res:Strings.Viewer_PreviousMatch}" ToolTip.Tip="{x:Static res:Strings.Viewer_PreviousMatch}">
+        <Path Classes="icon" Data="{StaticResource IconChevronUp}" />
+      </Button>
+      <Button Classes="command" Command="{Binding NextMatchCommand}"
+              AutomationProperties.Name="{x:Static res:Strings.Viewer_NextMatch}" ToolTip.Tip="{x:Static res:Strings.Viewer_NextMatch}">
+        <Path Classes="icon" Data="{StaticResource IconChevronDown}" />
+      </Button>
+      <ToggleButton Classes="option" IsChecked="{Binding ShowOnlyMatches}"
+                    AutomationProperties.Name="{x:Static res:Strings.Viewer_OnlyMatches}" ToolTip.Tip="{x:Static res:Strings.Viewer_OnlyMatches}"
+                    AutomationProperties.AutomationId="Viewer.OnlyMatches">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <Path Classes="icon" Data="{StaticResource IconFilterClear}" />
+          <TextBlock Text="{x:Static res:Strings.Viewer_OnlyMatches}" VerticalAlignment="Center" />
+        </StackPanel>
+      </ToggleButton>
+      <Rectangle Classes="commandSeparator" />
+      <ToggleButton Classes="option level error" IsChecked="{Binding ShowErrors}" Content="{Binding ErrorsLabel}"
+                    AutomationProperties.Name="{Binding ErrorsLabel}" AutomationProperties.AutomationId="Viewer.Errors" />
+      <ToggleButton Classes="option level warning" IsChecked="{Binding ShowWarnings}" Content="{Binding WarningsLabel}"
+                    AutomationProperties.Name="{Binding WarningsLabel}" AutomationProperties.AutomationId="Viewer.Warnings" />
+      <ToggleButton Classes="option level" IsChecked="{Binding ShowInfo}" Content="{Binding InfoLabel}"
+                    AutomationProperties.Name="{Binding InfoLabel}" />
+      <ToggleButton Classes="option level" IsChecked="{Binding ShowDebug}" Content="{Binding DebugLabel}"
+                    AutomationProperties.Name="{Binding DebugLabel}" />
+      <Rectangle Classes="commandSeparator" />
+      <ToggleButton Classes="option" IsChecked="{Binding Follow}"
+                    AutomationProperties.Name="{x:Static res:Strings.Viewer_Follow}" ToolTip.Tip="{x:Static infra:CommandTips.ToggleFollow}"
+                    AutomationProperties.AutomationId="Viewer.Follow">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <Path Classes="icon" Data="{StaticResource IconFollow}" />
+          <TextBlock Text="{x:Static res:Strings.Viewer_Follow}" VerticalAlignment="Center" />
+        </StackPanel>
+      </ToggleButton>
+      <Button Classes="command" Command="{Binding GoToLineCommand}"
+              AutomationProperties.Name="{x:Static res:Strings.Viewer_GoToLine}" ToolTip.Tip="{x:Static infra:CommandTips.GoToLine}">
+        <Path Classes="icon" Data="{StaticResource IconGoTo}" />
+      </Button>
+    </WrapPanel>
+
+    <StackPanel Grid.Row="2" Margin="16,0,16,4" Spacing="4">
+      <TextBlock Text="{Binding PatternErrorText}" IsVisible="{Binding HasPatternError}" Classes="caption problem" TextWrapping="Wrap"
+                 AutomationProperties.LiveSetting="Polite" AutomationProperties.AutomationId="Viewer.PatternError" />
+      <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasProblem}">
+        <Path Classes="icon" Data="{StaticResource IconTimeout}" Stroke="{DynamicResource StatusProblemBrush}" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding ProblemText}" Classes="caption problem" TextWrapping="Wrap" VerticalAlignment="Center"
+                   AutomationProperties.LiveSetting="Assertive" AutomationProperties.AutomationId="Viewer.Problem" />
+        <Button Classes="subtle" Content="{x:Static res:Strings.Viewer_Retry}" Command="{Binding RetryCommand}" />
+      </StackPanel>
+      <TextBlock Text="{Binding NoticeText}" IsVisible="{Binding HasNotice}" Classes="caption secondary" TextWrapping="Wrap"
+                 AutomationProperties.LiveSetting="Polite" AutomationProperties.AutomationId="Viewer.Notice" />
+    </StackPanel>
+
+    <Border Grid.Row="3" BorderBrush="{DynamicResource StrokeDividerBrush}" BorderThickness="0,1">
+      <ListBox Classes="logLines"
+               ItemsSource="{Binding Lines}"
+               Selection="{Binding Selection}"
+               SelectionMode="Multiple"
+               ScrollViewer.HorizontalScrollBarVisibility="Auto"
+               AutomationProperties.Name="{x:Static res:Strings.Viewer_LinesList}"
+               AutomationProperties.AutomationId="Viewer.Lines"
+               infra:ScrollRequest.Target="{Binding ScrollTarget}"
+               infra:FocusRequest.Token="{Binding ListFocusToken}">
+        <ListBox.KeyBindings>
+          <KeyBinding Gesture="Ctrl+C" Command="{Binding CopyLinesCommand}" />
+        </ListBox.KeyBindings>
+        <ListBox.ContextMenu>
+          <ContextMenu>
+            <MenuItem Header="{x:Static res:Strings.Viewer_CopyLines}" Command="{Binding CopyLinesCommand}" InputGesture="Ctrl+C" />
+            <MenuItem Header="{x:Static res:Strings.Viewer_GoToLine}" Command="{Binding GoToLineCommand}" InputGesture="{x:Static infra:CommandCatalog.GoToLine}" />
+          </ContextMenu>
+        </ListBox.ContextMenu>
+        <ListBox.Styles>
+          <Style Selector="ListBoxItem" x:DataType="viewer:LogLineViewModel">
+            <Setter Property="AutomationProperties.Name" Value="{Binding Text}" />
+          </Style>
+        </ListBox.Styles>
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="viewer:LogLineViewModel">
+            <Grid ColumnDefinitions="Auto,*">
+              <TextBlock Classes="lineNumber" Text="{Binding NumberText}"
+                         Width="{Binding $parent[ListBox].((viewer:LogViewerViewModel)DataContext).GutterWidth}" />
+              <controls:LogLineText Grid.Column="1" Classes="logText"
+                                    Classes.error="{Binding IsError}" Classes.warning="{Binding IsWarning}" Classes.debug="{Binding IsDebug}"
+                                    Text="{Binding Text}" Highlights="{Binding Highlights}"
+                                    HighlightBrush="{DynamicResource MatchHighlightBrush}" />
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+
+    <Grid Grid.Row="4" ColumnDefinitions="Auto,Auto,*,Auto" Margin="16,4">
+      <TextBlock Grid.Column="0" Text="{Binding LinesText}" Classes="caption secondary"
+                 AutomationProperties.AutomationId="Viewer.LinesText" />
+      <TextBlock Grid.Column="1" Text="{Binding CurrentLineText}" Classes="caption secondary" Margin="16,0,0,0" />
+      <TextBlock Grid.Column="2" Text="{Binding ProgressText}" Classes="caption secondary" Margin="16,0,0,0"
+                 AutomationProperties.LiveSetting="Polite" AutomationProperties.AutomationId="Viewer.Progress" />
+      <TextBlock Grid.Column="3" Text="{Binding FileText}" Classes="caption secondary" />
+    </Grid>
+  </Grid>
+</UserControl>

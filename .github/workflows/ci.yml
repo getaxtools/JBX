@@ -50,6 +50,7 @@ jobs:
       - run: dotnet format --verify-no-changes --no-restore
       - run: pwsh scripts/Test-SourceHygiene.ps1
       - run: pwsh scripts/Test-PackageLicences.ps1
+      - run: pwsh scripts/New-ThirdPartyNotices.ps1 -Check
       - name: Vulnerable packages
         run: |
           $output = dotnet list package --vulnerable --include-transitive 2>&1 | Out-String

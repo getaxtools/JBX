@@ -1,0 +1,56 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:Jbx.Desktop.Controls">
+  <ControlTheme x:Key="{x:Type controls:StatusBadge}" TargetType="controls:StatusBadge">
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+          <Path x:Name="PART_Icon"
+                Classes="icon"
+                Data="{StaticResource IconUnknown}"
+                Stroke="{DynamicResource StatusNeutralBrush}"
+                VerticalAlignment="Center" />
+          <TextBlock x:Name="PART_Label"
+                     Text="{TemplateBinding Label}"
+                     IsVisible="{TemplateBinding ShowLabel}"
+                     Foreground="{DynamicResource StatusNeutralBrush}"
+                     FontSize="{StaticResource FontSizeCaption}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^:reachable /template/ Path#PART_Icon">
+      <Setter Property="Data" Value="{StaticResource IconReachable}" />
+      <Setter Property="Stroke" Value="{DynamicResource StatusReachableBrush}" />
+    </Style>
+    <Style Selector="^:reachable /template/ TextBlock#PART_Label">
+      <Setter Property="Foreground" Value="{DynamicResource StatusReachableBrush}" />
+    </Style>
+    <Style Selector="^:notfound /template/ Path#PART_Icon">
+      <Setter Property="Data" Value="{StaticResource IconNotFound}" />
+      <Setter Property="Stroke" Value="{DynamicResource StatusProblemBrush}" />
+    </Style>
+    <Style Selector="^:notfound /template/ TextBlock#PART_Label">
+      <Setter Property="Foreground" Value="{DynamicResource StatusProblemBrush}" />
+    </Style>
+    <Style Selector="^:denied /template/ Path#PART_Icon">
+      <Setter Property="Data" Value="{StaticResource IconDenied}" />
+      <Setter Property="Stroke" Value="{DynamicResource StatusProblemBrush}" />
+    </Style>
+    <Style Selector="^:denied /template/ TextBlock#PART_Label">
+      <Setter Property="Foreground" Value="{DynamicResource StatusProblemBrush}" />
+    </Style>
+    <Style Selector="^:timeout /template/ Path#PART_Icon">
+      <Setter Property="Data" Value="{StaticResource IconTimeout}" />
+      <Setter Property="Stroke" Value="{DynamicResource StatusWarningBrush}" />
+    </Style>
+    <Style Selector="^:timeout /template/ TextBlock#PART_Label">
+      <Setter Property="Foreground" Value="{DynamicResource StatusWarningBrush}" />
+    </Style>
+    <Style Selector="^:checking /template/ Path#PART_Icon">
+      <Setter Property="Data" Value="{StaticResource IconChecking}" />
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

@@ -1,5 +1,50 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <SolidColorBrush x:Key="SurfaceBaseBrush" Color="#F3F3F3" />
+      <SolidColorBrush x:Key="SurfaceContentBrush" Color="#FBFBFB" />
+      <SolidColorBrush x:Key="SurfaceCardBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#0A000000" />
+      <SolidColorBrush x:Key="SurfaceSelectedBrush" Color="#14005FB8" />
+      <SolidColorBrush x:Key="StrokeDividerBrush" Color="#E5E5E5" />
+      <SolidColorBrush x:Key="StrokeControlBrush" Color="#D1D1D1" />
+      <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1B1B1B" />
+      <SolidColorBrush x:Key="TextSecondaryBrush" Color="#5D5D5D" />
+      <SolidColorBrush x:Key="StatusReachableBrush" Color="#0F7B0F" />
+      <SolidColorBrush x:Key="StatusProblemBrush" Color="#C42B1C" />
+      <SolidColorBrush x:Key="StatusWarningBrush" Color="#9D5D00" />
+      <SolidColorBrush x:Key="StatusNeutralBrush" Color="#5D5D5D" />
+      <SolidColorBrush x:Key="ProductionBrush" Color="#C42B1C" />
+      <SolidColorBrush x:Key="ProductionBackgroundBrush" Color="#FDE7E9" />
+      <SolidColorBrush x:Key="FavouriteBrush" Color="#9D5D00" />
+      <SolidColorBrush x:Key="AccentTextBrush" Color="#005FB8" />
+      <SolidColorBrush x:Key="MatchHighlightBrush" Color="#FFE86B" />
+      <SolidColorBrush x:Key="ScrimBrush" Color="#33000000" />
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="SurfaceBaseBrush" Color="#202020" />
+      <SolidColorBrush x:Key="SurfaceContentBrush" Color="#272727" />
+      <SolidColorBrush x:Key="SurfaceCardBrush" Color="#2D2D2D" />
+      <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#0FFFFFFF" />
+      <SolidColorBrush x:Key="SurfaceSelectedBrush" Color="#2960CDFF" />
+      <SolidColorBrush x:Key="StrokeDividerBrush" Color="#3A3A3A" />
+      <SolidColorBrush x:Key="StrokeControlBrush" Color="#4A4A4A" />
+      <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFFFFF" />
+      <SolidColorBrush x:Key="TextSecondaryBrush" Color="#C5C5C5" />
+      <SolidColorBrush x:Key="StatusReachableBrush" Color="#6CCB5F" />
+      <SolidColorBrush x:Key="StatusProblemBrush" Color="#FF99A4" />
+      <SolidColorBrush x:Key="StatusWarningBrush" Color="#FCE100" />
+      <SolidColorBrush x:Key="StatusNeutralBrush" Color="#C5C5C5" />
+      <SolidColorBrush x:Key="ProductionBrush" Color="#FF99A4" />
+      <SolidColorBrush x:Key="ProductionBackgroundBrush" Color="#442726" />
+      <SolidColorBrush x:Key="FavouriteBrush" Color="#FCE100" />
+      <SolidColorBrush x:Key="AccentTextBrush" Color="#60CDFF" />
+      <SolidColorBrush x:Key="MatchHighlightBrush" Color="#7A6400" />
+      <SolidColorBrush x:Key="ScrimBrush" Color="#66000000" />
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+
   <FontFamily x:Key="ContentControlThemeFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
   <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
   <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
@@ -8,14 +53,63 @@
   <x:Double x:Key="FontSizeBody">14</x:Double>
   <x:Double x:Key="FontSizeBodyLarge">18</x:Double>
   <x:Double x:Key="FontSizeSubtitle">20</x:Double>
+  <x:Double x:Key="FontSizeLog">13</x:Double>
+  <FontFamily x:Key="MonospaceFontFamily">Cascadia Mono, Consolas, Courier New</FontFamily>
 
   <x:Double x:Key="SpacingSmall">8</x:Double>
   <x:Double x:Key="SpacingMedium">12</x:Double>
   <x:Double x:Key="SpacingLarge">16</x:Double>
   <Thickness x:Key="ContentEdgePadding">16</Thickness>
+  <Thickness x:Key="PanePadding">12</Thickness>
 
-  <x:Double x:Key="WindowDefaultWidth">1100</x:Double>
-  <x:Double x:Key="WindowDefaultHeight">700</x:Double>
-  <x:Double x:Key="WindowMinWidth">640</x:Double>
-  <x:Double x:Key="WindowMinHeight">400</x:Double>
+  <x:Double x:Key="WindowDefaultWidth">1200</x:Double>
+  <x:Double x:Key="WindowDefaultHeight">760</x:Double>
+  <x:Double x:Key="WindowMinWidth">720</x:Double>
+  <x:Double x:Key="WindowMinHeight">440</x:Double>
+  <x:Double x:Key="TitleBarHeight">40</x:Double>
+  <x:Double x:Key="TitleBarDragMinWidth">188</x:Double>
+  <x:Double x:Key="CaptionButtonsWidth">140</x:Double>
+  <x:Double x:Key="TabMinWidth">120</x:Double>
+  <x:Double x:Key="TabMaxWidth">240</x:Double>
+  <x:Double x:Key="RowMinHeight">32</x:Double>
+  <Thickness x:Key="FolderRowMargin">22,0,0,0</Thickness>
+  <Thickness x:Key="FileRowMargin">50,0,0,0</Thickness>
+  <x:Double x:Key="ChevronSize">24</x:Double>
+  <x:Double x:Key="CommandSeparatorHeight">20</x:Double>
+  <x:Double x:Key="IconSize">16</x:Double>
+  <x:Double x:Key="IconStrokeThickness">1.25</x:Double>
+  <x:Double x:Key="FavouritesPaneDefaultWidth">260</x:Double>
+  <x:Double x:Key="DetailsPaneDefaultWidth">400</x:Double>
+  <x:Double x:Key="SearchBoxWidth">320</x:Double>
+  <x:Double x:Key="PaletteWidth">620</x:Double>
+  <x:Double x:Key="PaletteListMaxHeight">380</x:Double>
+
+  <StreamGeometry x:Key="IconChevronRight">M6,3.5 L10.5,8 L6,12.5</StreamGeometry>
+  <StreamGeometry x:Key="IconChevronDown">M3.5,6 L8,10.5 L12.5,6</StreamGeometry>
+  <StreamGeometry x:Key="IconEdit">M2.5,13.5 L3.2,10.4 L10.6,3 L13,5.4 L5.6,12.8 Z M9.2,4.4 L11.6,6.8</StreamGeometry>
+  <StreamGeometry x:Key="IconPalette">M2.5,4 L6.5,8 L2.5,12 M8,12.5 L13.5,12.5</StreamGeometry>
+  <StreamGeometry x:Key="IconChevronUp">M3.5,10 L8,5.5 L12.5,10</StreamGeometry>
+  <StreamGeometry x:Key="IconFollow">M8,2 L8,10.5 M4.5,7 L8,10.5 L11.5,7 M3,13.5 L13,13.5</StreamGeometry>
+  <StreamGeometry x:Key="IconGoTo">M2,8 L11,8 M8,4.5 L11.5,8 L8,11.5 M14,3 L14,13</StreamGeometry>
+  <StreamGeometry x:Key="IconExpandAll">M3.5,3 L8,7.5 L12.5,3 M3.5,8.5 L8,13 L12.5,8.5</StreamGeometry>
+  <StreamGeometry x:Key="IconCollapseAll">M3.5,7.5 L8,3 L12.5,7.5 M3.5,13 L8,8.5 L12.5,13</StreamGeometry>
+  <StreamGeometry x:Key="IconStar">M8,1.5 L10,5.8 L14.6,6.3 L11.2,9.4 L12.1,14 L8,11.7 L3.9,14 L4.8,9.4 L1.4,6.3 L6,5.8 Z</StreamGeometry>
+  <StreamGeometry x:Key="IconFolder">M1.5,3.5 L6,3.5 L7.5,5 L14.5,5 L14.5,13 L1.5,13 Z</StreamGeometry>
+  <StreamGeometry x:Key="IconFile">M3.5,1.5 L9.5,1.5 L12.5,4.5 L12.5,14.5 L3.5,14.5 Z M9.5,1.5 L9.5,4.5 L12.5,4.5</StreamGeometry>
+  <StreamGeometry x:Key="IconSearch">M6.75,2 A4.75,4.75 0 1 1 6.75,11.5 A4.75,4.75 0 1 1 6.75,2 Z M10.2,10.2 L14,14</StreamGeometry>
+  <StreamGeometry x:Key="IconPlus">M8,2.5 L8,13.5 M2.5,8 L13.5,8</StreamGeometry>
+  <StreamGeometry x:Key="IconClose">M4,4 L12,12 M12,4 L4,12</StreamGeometry>
+  <StreamGeometry x:Key="IconRefresh">M13,8 A5,5 0 1 1 11.5,4.4 M12,1.5 L12,4.6 L8.9,4.6</StreamGeometry>
+  <StreamGeometry x:Key="IconCopy">M5.5,5.5 L13.5,5.5 L13.5,14.5 L5.5,14.5 Z M2.5,11 L2.5,1.5 L10,1.5</StreamGeometry>
+  <StreamGeometry x:Key="IconOpenExternal">M9,2 L14,2 L14,7 M14,2 L7.5,8.5 M12,10 L12,14 L2,14 L2,4 L6,4</StreamGeometry>
+  <StreamGeometry x:Key="IconPane">M1.5,2.5 L14.5,2.5 L14.5,13.5 L1.5,13.5 Z M5.5,2.5 L5.5,13.5</StreamGeometry>
+  <StreamGeometry x:Key="IconFilterClear">M2,3 L14,3 L9.5,8.5 L9.5,13 L6.5,11.5 L6.5,8.5 Z</StreamGeometry>
+  <StreamGeometry x:Key="IconConfig">M3.5,1.5 L9.5,1.5 L12.5,4.5 L12.5,14.5 L3.5,14.5 Z M5.5,8 L10.5,8 M5.5,10.5 L10.5,10.5</StreamGeometry>
+  <StreamGeometry x:Key="IconReachable">M3,8.5 L6.5,12 L13,4.5</StreamGeometry>
+  <StreamGeometry x:Key="IconNotFound">M8,1.5 A6.5,6.5 0 1 1 8,14.5 A6.5,6.5 0 1 1 8,1.5 Z M3.4,12.6 L12.6,3.4</StreamGeometry>
+  <StreamGeometry x:Key="IconDenied">M4.5,7 L11.5,7 L11.5,14 L4.5,14 Z M6,7 L6,5 A2,2 0 0 1 10,5 L10,7</StreamGeometry>
+  <StreamGeometry x:Key="IconTimeout">M8,1.5 A6.5,6.5 0 1 1 8,14.5 A6.5,6.5 0 1 1 8,1.5 Z M8,4.5 L8,8.5 L10.5,10</StreamGeometry>
+  <StreamGeometry x:Key="IconChecking">M4,2 L12,2 M4,14 L12,14 M5,2 L11,8 L5,14 M11,2 L5,8 L11,14</StreamGeometry>
+  <StreamGeometry x:Key="IconUnknown">M5.5,5.5 A2.5,2.5 0 1 1 8.8,7.9 L8,9.5 M8,12 L8,12.8</StreamGeometry>
+  <StreamGeometry x:Key="IconProduction">M8,1.5 L15,14 L1,14 Z M8,6 L8,9.5 M8,11.5 L8,12.2</StreamGeometry>
 </ResourceDictionary>

@@ -77,6 +77,7 @@ dotnet_naming_style.i_prefix.capitalization = pascal_case
 dotnet_naming_style.i_prefix.required_prefix = I
 
 dotnet_diagnostic.CA1031.severity = warning
+dotnet_diagnostic.CS1591.severity = none
 
 [src/**.cs]
 dotnet_diagnostic.CA2007.severity = warning

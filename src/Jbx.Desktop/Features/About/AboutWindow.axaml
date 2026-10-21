@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:about="using:Jbx.Desktop.Features.About"
+        xmlns:res="using:Jbx.Desktop.Resources"
+        x:Class="Jbx.Desktop.Features.About.AboutWindow"
+        x:DataType="about:AboutViewModel"
+        Title="{x:Static res:Strings.About_Title}"
+        Width="560" Height="640" MinWidth="420" MinHeight="400"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource SurfaceCardBrush}">
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Escape" Command="{Binding CloseCommand}" />
+  </Window.KeyBindings>
+  <Grid Margin="20" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+    <TextBlock Text="{x:Static res:Strings.Shell_Window_Title}" Classes="subtitle" />
+    <TextBlock Grid.Row="1" Text="{Binding VersionText}" Classes="secondary" Margin="0,4,0,0" AutomationProperties.AutomationId="About.Version" />
+    <TextBlock Grid.Row="2" Text="{x:Static res:Strings.About_Tagline}" TextWrapping="Wrap" Margin="0,12,0,0" />
+    <TextBlock Grid.Row="3" Text="{x:Static res:Strings.About_Licence}" Classes="caption secondary" TextWrapping="Wrap" Margin="0,8,0,0" />
+    <TabControl Grid.Row="4" Margin="0,12,0,0">
+      <TabItem Header="{x:Static res:Strings.About_Shortcuts}" AutomationProperties.Name="{x:Static res:Strings.About_Shortcuts}">
+        <ListBox ItemsSource="{Binding Shortcuts}" AutomationProperties.Name="{x:Static res:Strings.About_Shortcuts}">
+          <ListBox.Styles>
+            <Style Selector="ListBoxItem" x:DataType="about:ShortcutLine">
+              <Setter Property="AutomationProperties.Name" Value="{Binding Action}" />
+              <Setter Property="AutomationProperties.HelpText" Value="{Binding Keys}" />
+            </Style>
+          </ListBox.Styles>
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="about:ShortcutLine">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{Binding Action}" />
+                <TextBlock Grid.Column="1" Text="{Binding Keys}" Classes="secondary" FontFamily="{StaticResource MonospaceFontFamily}" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </TabItem>
+      <TabItem Header="{x:Static res:Strings.About_Notices}" AutomationProperties.Name="{x:Static res:Strings.About_Notices}">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+          <SelectableTextBlock Text="{Binding ThirdPartyNotices}" FontFamily="{StaticResource MonospaceFontFamily}" FontSize="{StaticResource FontSizeCaption}"
+                               AutomationProperties.Name="{x:Static res:Strings.About_Notices}" AutomationProperties.AutomationId="About.Notices" />
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
+    <Button Grid.Row="5" Content="{x:Static res:Strings.About_Close}" Command="{Binding CloseCommand}" Classes="accent"
+            HorizontalAlignment="Right" Margin="0,12,0,0" IsDefault="True" IsCancel="True" />
+  </Grid>
+</Window>

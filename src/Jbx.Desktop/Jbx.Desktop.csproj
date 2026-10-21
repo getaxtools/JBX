@@ -11,6 +11,7 @@
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Microsoft.CodeAnalysis.ResxSourceGenerator" PrivateAssets="all" />
   </ItemGroup>
 
@@ -21,6 +22,7 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx" GenerateSource="true" ClassName="Jbx.Desktop.Resources.Strings" EmitFormatMethods="true" />
+    <EmbeddedResource Include="..\..\THIRD-PARTY-NOTICES.txt" LogicalName="ThirdPartyNotices.txt" Link="Resources\THIRD-PARTY-NOTICES.txt" />
   </ItemGroup>
 
   <ItemGroup>
