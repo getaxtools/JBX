@@ -31,7 +31,7 @@
     <Company>getaxtools</Company>
     <Authors>getaxtools</Authors>
     <Copyright>Copyright (c) 2026 getaxtools (https://github.com/getaxtools)</Copyright>
-    <VersionPrefix>0.1.0</VersionPrefix> <!-- x-release-please-version -->
+    <VersionPrefix>1.0.0</VersionPrefix> <!-- x-release-please-version -->
     <VersionSuffix>dev</VersionSuffix>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
